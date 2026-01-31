@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, User, ShoppingBag, Menu, LogIn, Settings, Package } from "lucide-react";
 import vafa from '../assets/vafa.jpeg';
+import LoginModal from './LoginModal';
 
 const Navbar = ({ isScrolled, setMobileMenuOpen }) => {
     // State for the Account Dropdown
     const [isAccountOpen, setIsAccountOpen] = useState(false);
     const dropdownRef = useRef(null);
+    const [loginOpen, setLoginOpen] = useState(false);
+
 
     const colors = {
         gold: "#B59410",
@@ -93,9 +96,13 @@ const Navbar = ({ isScrolled, setMobileMenuOpen }) => {
                                     <div className="px-4 py-2 border-b border-gray-50">
                                         <p className="text-[10px] text-gray-400 font-bold tracking-widest uppercase">Welcome</p>
                                     </div>
-                                    <button className="w-full flex items-center gap-3 px-4 py-3 text-[11px] font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-                                        <LogIn size={14} className="text-gray-400" /> LOGIN / REGISTER
+                                    <button
+                                        onClick={() => setLoginOpen(true)}
+                                        className="w-full flex items-center gap-3 px-4 py-3 text-[11px]"
+                                    >
+                                        <LogIn size={14} /> LOGIN / REGISTER
                                     </button>
+
                                     <button className="w-full flex items-center gap-3 px-4 py-3 text-[11px] font-medium text-gray-700 hover:bg-gray-50 transition-colors">
                                         <Package size={14} className="text-gray-400" /> MY ORDERS
                                     </button>
@@ -132,6 +139,11 @@ const Navbar = ({ isScrolled, setMobileMenuOpen }) => {
                     </div>
                 </div>
             </nav>
+            <LoginModal
+                isOpen={loginOpen}
+                onClose={() => setLoginOpen(false)}
+            />
+
         </header>
     );
 };
