@@ -11,8 +11,17 @@ import {
 } from "lucide-react"; // npm install lucide-react
 
 function Users() {
+    const [showAddModal, setShowAddModal] = useState(false);
+    const [formData, setFormData] = useState({
+        name: "",
+        password: "",
+        phone: "",
+        role: "user",
+        address: ""
+    });
     const [users, setUsers] = useState([]);
     const [deleteId, setDeleteId] = useState(null);
+
 
 
     useEffect(() => {
@@ -37,6 +46,35 @@ function Users() {
             console.error("Delete error:", err);
         }
     };
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+    };
+    const addUser = async () => {
+        try {
+            const res = await axios.post(
+                "http://localhost:5000/api/users",
+                formData
+            );
+
+            setUsers([res.data, ...users]);
+            setShowAddModal(false);
+
+            // clear form
+            setFormData({
+                name: "",
+                password: "",
+                phone: "",
+                role: "user",
+                address: ""
+            });
+        } catch (err) {
+            console.error("Add error:", err);
+        }
+    };
+
 
     return (
         <div className="min-h-screen bg-[#F8FAFC] font-sans">
@@ -58,7 +96,11 @@ function Users() {
                                 className="pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500/20 outline-none w-64 transition-all"
                             />
                         </div>
-                        <button className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm shadow-indigo-200">
+                        <button
+                            onClick={() => setShowAddModal(true)}
+                            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm shadow-indigo-200"
+                        >
+
                             <UserPlus size={16} />
                             Add User
                         </button>
@@ -151,6 +193,104 @@ function Users() {
                     </div>
                 </div>
             )}
+            {showAddModal && (
+                <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+                        {/* Modal Header */}
+                        <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+                            <h2 className="text-xl font-bold text-slate-800">Create New User</h2>
+                            <p className="text-sm text-slate-500">Fill in the details to register a new member.</p>
+                        </div>
+
+                        {/* Modal Body */}
+                        <div className="p-6 space-y-4">
+                            <div className="grid grid-cols-1 gap-4">
+                                {/* Name Field */}
+                                <div>
+                                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1 px-1">Full Name</label>
+                                    <input
+                                        name="name"
+                                        value={formData.name}
+                                        onChange={handleChange}
+                                        placeholder="e.g. John Doe"
+                                        className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm"
+                                    />
+                                </div>
+
+                                {/* Password Field */}
+                                <div>
+                                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1 px-1">Password</label>
+                                    <input
+                                        type="password"
+                                        name="password"
+                                        value={formData.password}
+                                        onChange={handleChange}
+                                        placeholder="••••••••"
+                                        className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm"
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    {/* Phone Field */}
+                                    <div>
+                                        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1 px-1">Phone</label>
+                                        <input
+                                            name="phone"
+                                            value={formData.phone}
+                                            onChange={handleChange}
+                                            placeholder="+1 (555) 000"
+                                            className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm"
+                                        />
+                                    </div>
+
+                                    {/* Role Field */}
+                                    <div>
+                                        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1 px-1">Access Role</label>
+                                        <select
+                                            name="role"
+                                            value={formData.role}
+                                            onChange={handleChange}
+                                            className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm appearance-none cursor-pointer"
+                                        >
+                                            <option value="user">User</option>
+                                            <option value="admin">Admin</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                {/* Address Field */}
+                                <div>
+                                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1 px-1">Residential Address</label>
+                                    <input
+                                        name="address"
+                                        value={formData.address}
+                                        onChange={handleChange}
+                                        placeholder="Street, City, Country"
+                                        className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Modal Footer */}
+                        <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
+                            <button
+                                onClick={() => setShowAddModal(false)}
+                                className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-slate-800 hover:bg-slate-200/50 rounded-lg transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={addUser}
+                                className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-lg shadow-md shadow-indigo-200 transition-all active:scale-95"
+                            >
+                                Save User
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 }
