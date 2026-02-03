@@ -12,6 +12,8 @@ import {
 
 function Users() {
     const [users, setUsers] = useState([]);
+    const [deleteId, setDeleteId] = useState(null);
+
 
     useEffect(() => {
         getUsers();
@@ -26,14 +28,13 @@ function Users() {
         }
     };
 
-    const deleteUser = async (id) => {
-        if (window.confirm("Are you sure you want to delete this user?")) {
-            try {
-                await axios.delete(`http://localhost:5000/api/users/${id}`);
-                setUsers(users.filter(u => u._id !== id));
-            } catch (err) {
-                console.error("Delete error:", err);
-            }
+    const deleteUser = async () => {
+        try {
+            await axios.delete(`http://localhost:5000/api/users/${deleteId}`);
+            setUsers(users.filter(u => u._id !== deleteId));
+            setDeleteId(null);
+        } catch (err) {
+            console.error("Delete error:", err);
         }
     };
 
@@ -110,7 +111,7 @@ function Users() {
                                                 <PencilLine size={18} />
                                             </button>
                                             <button
-                                                onClick={() => deleteUser(u._id)}
+                                                onClick={() => setDeleteId(u._id)}
                                                 className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
                                                 title="Delete User"
                                             >
@@ -124,6 +125,32 @@ function Users() {
                     </table>
                 </div>
             </div>
+            {deleteId && (
+                <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-xl shadow-xl w-80 p-6 text-center">
+                        <h2 className="text-lg font-semibold mb-2">Delete User</h2>
+                        <p className="text-sm text-slate-500 mb-6">
+                            Are you sure you want to delete this user?
+                        </p>
+
+                        <div className="flex justify-center gap-4">
+                            <button
+                                onClick={() => setDeleteId(null)}
+                                className="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50"
+                            >
+                                Cancel
+                            </button>
+
+                            <button
+                                onClick={deleteUser}
+                                className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
