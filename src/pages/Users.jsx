@@ -1,16 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import {
-    Search,
-    UserPlus,
-    PencilLine,
-    Trash2,
-    MoreHorizontal,
-    User,
-    Mail
-} from "lucide-react"; // npm install lucide-react
+import { Search, UserPlus, PencilLine, Trash2, MoreHorizontal, User, Mail } from "lucide-react";
 
 function Users() {
+
     const [showAddModal, setShowAddModal] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
@@ -24,11 +17,6 @@ function Users() {
     const [isEdit, setIsEdit] = useState(false);
     const [editId, setEditId] = useState(null);
 
-
-    useEffect(() => {
-        getUsers();
-    }, []);
-
     const getUsers = async () => {
         try {
             const res = await axios.get("http://localhost:5000/api/users");
@@ -37,6 +25,7 @@ function Users() {
             console.error("Fetch error:", err);
         }
     };
+    useEffect(() => { getUsers() }, []);
 
     const deleteUser = async () => {
         try {
@@ -47,79 +36,57 @@ function Users() {
             console.error("Delete error:", err);
         }
     };
+
     const handleChange = (e) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value
         });
     };
+
     const addUser = async () => {
         try {
-            const res = await axios.post(
-                "http://localhost:5000/api/users",
-                formData
-            );
-
+            const res = await axios.post("http://localhost:5000/api/users", formData);
             setUsers([res.data, ...users]);
             setShowAddModal(false);
-
-            // clear form
             setFormData({
-                name: "",
-                password: "",
-                phone: "",
-                role: "user",
-                address: ""
+                name: "", password: "",
+                phone: "", role: "user", address: ""
             });
         } catch (err) {
-            console.error("Add error:", err);
+            console.error("Add error : ", err);
         }
     };
+
     const handleEdit = (user) => {
         setFormData({
             name: user.name,
-            password: "", // usually don’t show old password
+            password: user.password,
             phone: user.phone,
             role: user.role,
             address: user.address
         });
-
         setEditId(user._id);
         setIsEdit(true);
         setShowAddModal(true);
     };
+
     const updateUser = async () => {
         try {
-            const res = await axios.put(
-                `http://localhost:5000/api/users/${editId}`,
-                formData
-            );
-
-            setUsers(users.map(u =>
-                u._id === editId ? res.data : u
-            ));
-
+            const res = await axios.put(`http://localhost:5000/api/users/${editId}`, formData);
+            setUsers(users.map(u => u._id === editId ? res.data : u));
             resetModal();
         } catch (err) {
             console.error("Update error:", err);
         }
     };
+
     const resetModal = () => {
         setShowAddModal(false);
         setIsEdit(false);
         setEditId(null);
-        setFormData({
-            name: "",
-            password: "",
-            phone: "",
-            role: "user",
-            address: ""
-        });
+        setFormData({ name: "", password: "", phone: "", role: "user", address: "" });
     };
-
-
-
-
 
     return (
         <div className="min-h-screen bg-[#F8FAFC] font-sans">
@@ -214,8 +181,10 @@ function Users() {
                     </table>
                 </div>
             </div>
+
+            {/* Delete Modal */}
             {deleteId && (
-                <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+                <div className="fixed inset-0 z-[100] flex items-center bg-black/80 justify-center overflow-y-auto overflow-x-hidden outline-none focus:outline-none">
                     <div className="bg-white rounded-xl shadow-xl w-80 p-6 text-center">
                         <h2 className="text-lg font-semibold mb-2">Delete User</h2>
                         <p className="text-sm text-slate-500 mb-6">
@@ -240,13 +209,15 @@ function Users() {
                     </div>
                 </div>
             )}
+
+            {/* Add and Edit User Modal */}
             {showAddModal && (
-                <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                <div className="fixed inset-0 z-[100] flex items-center bg-black/80 justify-center overflow-y-auto overflow-x-hidden outline-none focus:outline-none">
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
                         {/* Modal Header */}
                         <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50">
-                            <h2 className="text-xl font-bold text-slate-800">Create New User</h2>
-                            <p className="text-sm text-slate-500">Fill in the details to register a new member.</p>
+                            <h2 className="text-xl font-bold text-slate-800">{isEdit ? 'Edit User' : 'Create New User'}</h2>
+                            <p className="text-sm text-slate-500">Fill in the details {isEdit ? 'to edit member.' : 'to register a new member.'}</p>
                         </div>
 
                         {/* Modal Body */}
@@ -254,25 +225,23 @@ function Users() {
                             <div className="grid grid-cols-1 gap-4">
                                 {/* Name Field */}
                                 <div>
-                                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1 px-1">Full Name</label>
+                                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 px-1">Full Name</label>
                                     <input
                                         name="name"
                                         value={formData.name}
                                         onChange={handleChange}
-                                        placeholder="e.g. John Doe"
                                         className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm"
                                     />
                                 </div>
 
                                 {/* Password Field */}
                                 <div>
-                                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1 px-1">Password</label>
+                                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 px-1">Password</label>
                                     <input
                                         type="password"
                                         name="password"
                                         value={formData.password}
                                         onChange={handleChange}
-                                        placeholder="••••••••"
                                         className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm"
                                     />
                                 </div>
@@ -280,19 +249,18 @@ function Users() {
                                 <div className="grid grid-cols-2 gap-4">
                                     {/* Phone Field */}
                                     <div>
-                                        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1 px-1">Phone</label>
+                                        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 px-1">Phone</label>
                                         <input
                                             name="phone"
                                             value={formData.phone}
                                             onChange={handleChange}
-                                            placeholder="+1 (555) 000"
                                             className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm"
                                         />
                                     </div>
 
                                     {/* Role Field */}
                                     <div>
-                                        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1 px-1">Access Role</label>
+                                        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 px-1">Access Role</label>
                                         <select
                                             name="role"
                                             value={formData.role}
@@ -307,12 +275,11 @@ function Users() {
 
                                 {/* Address Field */}
                                 <div>
-                                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1 px-1">Residential Address</label>
+                                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 px-1">Residential Address</label>
                                     <input
                                         name="address"
                                         value={formData.address}
                                         onChange={handleChange}
-                                        placeholder="Street, City, Country"
                                         className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm"
                                     />
                                 </div>
@@ -339,7 +306,7 @@ function Users() {
             )}
 
         </div>
-    );
+    )
 }
 
 export default Users;

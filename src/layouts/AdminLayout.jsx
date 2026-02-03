@@ -21,8 +21,9 @@ function AdminLayout() {
 				</div>
 
 				<nav className="space-y-3 flex-1">
+
 					<NavLink
-						to="/admin/inventory"
+						to="/admin/users"
 						className={({ isActive }) =>
 							`flex items-center gap-4 px-4 py-4 rounded-2xl transition-all ${isActive
 								? "bg-black text-white shadow-lg"
@@ -30,8 +31,8 @@ function AdminLayout() {
 							}`
 						}
 					>
-						<Package size={18} />
-						<span className="text-sm font-semibold">Inventory</span>
+						<Users size={18} />
+						<span className="text-sm font-semibold">User Directory</span>
 					</NavLink>
 
 					<NavLink
@@ -44,11 +45,11 @@ function AdminLayout() {
 						}
 					>
 						<ShoppingBag size={18} />
-						<span className="text-sm font-semibold">Orders</span>
+						<span className="text-sm font-semibold">Order History</span>
 					</NavLink>
-
+					
 					<NavLink
-						to="/admin/users"
+						to="/admin/perfumes"
 						className={({ isActive }) =>
 							`flex items-center gap-4 px-4 py-4 rounded-2xl transition-all ${isActive
 								? "bg-black text-white shadow-lg"
@@ -56,9 +57,10 @@ function AdminLayout() {
 							}`
 						}
 					>
-						<Users size={18} />
-						<span className="text-sm font-semibold">Users</span>
+						<Package size={18} />
+						<span className="text-sm font-semibold">Perfume Directory</span>
 					</NavLink>
+
 				</nav>
 
 				<button className="flex items-center gap-3 text-red-500 text-sm font-bold p-4 hover:bg-red-50 rounded-xl transition">

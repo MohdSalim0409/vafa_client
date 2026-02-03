@@ -6,7 +6,6 @@ import HeroSection from "../components/store/HeroSection";
 import AboutSection from "../components/store/AboutSection";
 
 function Storefront() {
-
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <StoreNavbar />

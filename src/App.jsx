@@ -3,9 +3,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AdminLayout from "./layouts/AdminLayout";
 import CustomerLayout from "./layouts/CustomerLayout";
 import StoreFront from "./pages/StoreFront";
-import Inventory from './pages/Inventory';
 import Order from './pages/Orders';
 import Users from './pages/Users';
+import Perfumes from './pages/Perfumes';
 
 function App() {
 	return (
@@ -15,7 +15,7 @@ function App() {
 				<Route path="/customer" element={<CustomerLayout />} />
 				<Route path="/admin/*" element={<AdminLayout />} >
 					<Route path="orders" element={<Order />} />
-					<Route path="inventory" element={<Inventory />} />
+					<Route path="perfumes" element={<Perfumes />} />
 					<Route path="users" element={<Users />} />
 				</Route>
 			</Routes>
