@@ -7,8 +7,7 @@ import Inventory from './pages/Inventory';
 import Order from './pages/Orders';
 import Users from './pages/Users';
 
-function AppRouter() {
-
+function App() {
 	return (
 		<BrowserRouter>
 			<Routes>
@@ -24,4 +23,4 @@ function AppRouter() {
 	);
 }
 
-export default AppRouter;
+export default App;

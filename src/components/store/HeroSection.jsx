@@ -2,9 +2,8 @@ import React from 'react'
 import { motion, AnimatePresence } from 'framer-motion';
 
 function HeroSection() {
-
     return (
-        <section className="px-6">
+       <section className="px-6 pt-32 pb-12"> 
             <div className="h-[75vh] rounded-[40px] overflow-hidden relative shadow-2xl">
                 <img src="https://images.unsplash.com/photo-1590736704728-f4730bb30770?q=80&w=2000" className="w-full h-full object-cover" alt="hero" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-16 text-white">
