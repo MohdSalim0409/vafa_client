@@ -1,38 +1,27 @@
 import React from 'react'
-import { useEffect, useState } from "react";
-import Navbar from "./pages/TopBar";
-import Hero from "./pages/Hero";
-import Products from "./pages/Products";
-import Contact from "./pages/Contact";
-import MobileMenu from "./pages/MobileMenu";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import AdminLayout from "./layouts/AdminLayout";
+import CustomerLayout from "./layouts/CustomerLayout";
+import StoreFront from "./pages/StoreFront";
+import Inventory from './pages/Inventory';
+import Order from './pages/Orders';
+import Users from './pages/Users';
 
-function App() {
-
-	const [isScrolled, setIsScrolled] = useState(false);
-	const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-	useEffect(() => {
-		const handleScroll = () => setIsScrolled(window.scrollY > 20);
-		window.addEventListener("scroll", handleScroll);
-		return () => window.removeEventListener("scroll", handleScroll);
-	}, []);
+function AppRouter() {
 
 	return (
-		<div className="min-h-screen font-serif">
-			<Navbar
-				isScrolled={isScrolled}
-				setMobileMenuOpen={setMobileMenuOpen}
-			/>
-			<main className="pt-[90px]">
-				<Hero />
-				<Products />
-				<Contact />
-			</main>
-			{mobileMenuOpen && (
-				<MobileMenu setMobileMenuOpen={setMobileMenuOpen} />
-			)}
-		</div>
+		<BrowserRouter>
+			<Routes>
+				<Route path="/" element={<StoreFront />} />
+				<Route path="/customer" element={<CustomerLayout />} />
+				<Route path="/admin/*" element={<AdminLayout />} >
+					<Route path="orders" element={<Order />} />
+					<Route path="inventory" element={<Inventory />} />
+					<Route path="users" element={<Users />} />
+				</Route>
+			</Routes>
+		</BrowserRouter>
 	);
 }
 
-export default App; 
+export default AppRouter;
