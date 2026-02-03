@@ -21,7 +21,8 @@ function Users() {
     });
     const [users, setUsers] = useState([]);
     const [deleteId, setDeleteId] = useState(null);
-
+    const [isEdit, setIsEdit] = useState(false);
+    const [editId, setEditId] = useState(null);
 
 
     useEffect(() => {
@@ -74,6 +75,50 @@ function Users() {
             console.error("Add error:", err);
         }
     };
+    const handleEdit = (user) => {
+        setFormData({
+            name: user.name,
+            password: "", // usually don’t show old password
+            phone: user.phone,
+            role: user.role,
+            address: user.address
+        });
+
+        setEditId(user._id);
+        setIsEdit(true);
+        setShowAddModal(true);
+    };
+    const updateUser = async () => {
+        try {
+            const res = await axios.put(
+                `http://localhost:5000/api/users/${editId}`,
+                formData
+            );
+
+            setUsers(users.map(u =>
+                u._id === editId ? res.data : u
+            ));
+
+            resetModal();
+        } catch (err) {
+            console.error("Update error:", err);
+        }
+    };
+    const resetModal = () => {
+        setShowAddModal(false);
+        setIsEdit(false);
+        setEditId(null);
+        setFormData({
+            name: "",
+            password: "",
+            phone: "",
+            role: "user",
+            address: ""
+        });
+    };
+
+
+
 
 
     return (
@@ -147,11 +192,13 @@ function Users() {
                                         <div className="flex justify-center items-center gap-1">
                                             {/* Action Buttons */}
                                             <button
+                                                onClick={() => handleEdit(u)}
                                                 className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
                                                 title="Edit User"
                                             >
                                                 <PencilLine size={18} />
                                             </button>
+
                                             <button
                                                 onClick={() => setDeleteId(u._id)}
                                                 className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
@@ -281,10 +328,10 @@ function Users() {
                                 Cancel
                             </button>
                             <button
-                                onClick={addUser}
+                                onClick={isEdit ? updateUser : addUser}
                                 className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-lg shadow-md shadow-indigo-200 transition-all active:scale-95"
                             >
-                                Save User
+                                {isEdit ? "Update User" : "Save User"}
                             </button>
                         </div>
                     </div>
