@@ -34,19 +34,6 @@ function AdminLayout() {
 						<Users size={18} />
 						<span className="text-sm font-semibold">User Directory</span>
 					</NavLink>
-
-					<NavLink
-						to="/admin/orders"
-						className={({ isActive }) =>
-							`flex items-center gap-4 px-4 py-4 rounded-2xl transition-all ${isActive
-								? "bg-black text-white shadow-lg"
-								: "text-gray-500 hover:bg-gray-100 hover:text-black"
-							}`
-						}
-					>
-						<ShoppingBag size={18} />
-						<span className="text-sm font-semibold">Order History</span>
-					</NavLink>
 					
 					<NavLink
 						to="/admin/perfumes"
@@ -72,6 +59,19 @@ function AdminLayout() {
 					>
 						<Warehouse size={18} />
 						<span className="text-sm font-semibold">Inventory Control</span>
+					</NavLink>
+
+					<NavLink
+						to="/admin/orders"
+						className={({ isActive }) =>
+							`flex items-center gap-4 px-4 py-4 rounded-2xl transition-all ${isActive
+								? "bg-black text-white shadow-lg"
+								: "text-gray-500 hover:bg-gray-100 hover:text-black"
+							}`
+						}
+					>
+						<ShoppingBag size={18} />
+						<span className="text-sm font-semibold">Order History</span>
 					</NavLink>
 
 				</nav>

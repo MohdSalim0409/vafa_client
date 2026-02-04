@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Search, UserPlus, PencilLine, Trash2, MoreHorizontal, User, Mail } from "lucide-react";
+import { Search, UserPlus, PencilLine, Trash2, Users } from "lucide-react";
 
-function Users() {
+function User() {
 
     const [showAddModal, setShowAddModal] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
         password: "",
         phone: "",
-        role: "user",
         address: ""
     });
     const [users, setUsers] = useState([]);
@@ -51,7 +50,7 @@ function Users() {
             setShowAddModal(false);
             setFormData({
                 name: "", password: "",
-                phone: "", role: "user", address: ""
+                phone: "", address: ""
             });
         } catch (err) {
             console.error("Add error : ", err);
@@ -63,7 +62,6 @@ function Users() {
             name: user.name,
             password: user.password,
             phone: user.phone,
-            role: user.role,
             address: user.address
         });
         setEditId(user._id);
@@ -85,7 +83,7 @@ function Users() {
         setShowAddModal(false);
         setIsEdit(false);
         setEditId(null);
-        setFormData({ name: "", password: "", phone: "", role: "user", address: "" });
+        setFormData({ name: "", password: "", phone: "", address: "" });
     };
 
     return (
@@ -121,64 +119,75 @@ function Users() {
 
                 {/* Main Table Card */}
                 <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-                    <table className="w-full text-center">
-                        <thead className="bg-slate-50/50 border-b border-slate-200">
-                            <tr>
-                                <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">User Details</th>
-                                <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Role</th>
-                                <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Contact</th>
-                                <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Address</th>
-                                <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100">
-                            {users.map((u) => (
-                                <tr key={u._id} className="hover:bg-slate-50/50 transition-colors group">
-                                    <td className="px-16 py-4">
-                                        <div className="flex items-center gap-3">
-                                            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-slate-600 font-semibold border border-slate-200">
-                                                {u.name.charAt(0)}
-                                            </div>
-                                            <div>
-                                                <div className="text-sm font-bold text-slate-900">{u.name}</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-bold bg-indigo-50 text-indigo-700 ring-1 ring-inset ring-indigo-700/10">
-                                            {u.role}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="text-sm text-slate-600 font-medium">{u.phone}</div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="text-sm text-slate-400">{u.address}</div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex justify-center items-center gap-1">
-                                            {/* Action Buttons */}
-                                            <button
-                                                onClick={() => handleEdit(u)}
-                                                className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
-                                                title="Edit User"
-                                            >
-                                                <PencilLine size={18} />
-                                            </button>
-
-                                            <button
-                                                onClick={() => setDeleteId(u._id)}
-                                                className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
-                                                title="Delete User"
-                                            >
-                                                <Trash2 size={18} />
-                                            </button>
-                                        </div>
-                                    </td>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-center">
+                            <thead className="bg-slate-50/50 border-b border-slate-200">
+                                <tr>
+                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">User Details</th>
+                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Role</th>
+                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Contact</th>
+                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Address</th>
+                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Actions</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100">
+                                {users.map((u) => (
+                                    <tr key={u._id} className="hover:bg-slate-50/50 transition-colors group">
+                                        <td className="px-16 py-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-slate-600 font-semibold border border-slate-200">
+                                                    {u.name.charAt(0)}
+                                                </div>
+                                                <div>
+                                                    <div className="text-sm font-bold text-slate-900">{u.name}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-bold bg-indigo-50 text-indigo-700 ring-1 ring-inset ring-indigo-700/10">
+                                                {u.role}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="text-sm text-slate-600 font-medium">{u.phone}</div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="text-sm text-slate-400">{u.address}</div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex justify-center items-center gap-1">
+                                                {/* Action Buttons */}
+                                                <button
+                                                    onClick={() => handleEdit(u)}
+                                                    className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
+                                                    title="Edit User"
+                                                >
+                                                    <PencilLine size={18} />
+                                                </button>
+
+                                                <button
+                                                    onClick={() => setDeleteId(u._id)}
+                                                    className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                                                    title="Delete User"
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {/* Empty State */}
+                    {users.length === 0 && (
+                        <div className="py-20 text-center">
+                            <Users className="mx-auto text-slate-200 mb-4" size={48} />
+                            <h3 className="text-slate-900 font-semibold">No users found</h3>
+                            <p className="text-slate-500 text-sm">Start by adding your first user to the system.</p>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -234,18 +243,6 @@ function Users() {
                                     />
                                 </div>
 
-                                {/* Password Field */}
-                                <div>
-                                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 px-1">Password</label>
-                                    <input
-                                        type="password"
-                                        name="password"
-                                        value={formData.password}
-                                        onChange={handleChange}
-                                        className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm"
-                                    />
-                                </div>
-
                                 <div className="grid grid-cols-2 gap-4">
                                     {/* Phone Field */}
                                     <div>
@@ -258,18 +255,16 @@ function Users() {
                                         />
                                     </div>
 
-                                    {/* Role Field */}
+                                    {/* Password Field */}
                                     <div>
-                                        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 px-1">Access Role</label>
-                                        <select
-                                            name="role"
-                                            value={formData.role}
+                                        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 px-1">Password</label>
+                                        <input
+                                            type="password"
+                                            name="password"
+                                            value={formData.password}
                                             onChange={handleChange}
-                                            className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm appearance-none cursor-pointer"
-                                        >
-                                            <option value="user">User</option>
-                                            <option value="admin">Admin</option>
-                                        </select>
+                                            className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm"
+                                        />
                                     </div>
                                 </div>
 
@@ -309,4 +304,4 @@ function Users() {
     )
 }
 
-export default Users;
+export default User;

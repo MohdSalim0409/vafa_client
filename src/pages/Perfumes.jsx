@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Search, Plus, Droplets, Edit, Trash2, Filter } from "lucide-react";
 
 function Perfumes() {
+
     const [perfumes, setPerfumes] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [deleteId, setDeleteId] = useState(null);
@@ -22,17 +23,12 @@ function Perfumes() {
     const deletePerfume = async () => {
         try {
             await axios.delete(`http://localhost:5000/api/perfumes/${deleteId}`);
-
-            // Remove from UI without refresh
             setPerfumes(perfumes.filter((p) => p._id !== deleteId));
-
             setDeleteId(null);
         } catch (error) {
             console.error(error);
         }
     };
-
-
 
     return (
         <div className="min-h-screen bg-[#F8FAFC] font-sans">
@@ -69,8 +65,8 @@ function Perfumes() {
                         <table className="w-full text-left">
                             <thead className="bg-slate-50/50 border-b border-slate-200">
                                 <tr>
-                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Perfume Name</th>
-                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Brand</th>
+                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">Perfume Name</th>
+                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">Brand</th>
                                     <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">Category</th>
                                     <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">Concentration</th>
                                     <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">Actions</th>
@@ -79,7 +75,7 @@ function Perfumes() {
                             <tbody className="divide-y divide-slate-100">
                                 {perfumes.map((item) => (
                                     <tr key={item._id} className="hover:bg-slate-50/50 transition-colors group">
-                                        <td className="px-6 py-4">
+                                        <td className="px-6 pl-16 py-4">
                                             <div className="flex items-center gap-3">
                                                 <div className="h-10 w-10 rounded-lg bg-purple-50 flex items-center justify-center text-purple-600 border border-purple-100">
                                                     <Droplets size={20} />
@@ -90,7 +86,7 @@ function Perfumes() {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-6 py-4 text-center">
                                             <span className="text-sm font-medium text-slate-700">{item.brand}</span>
                                         </td>
                                         <td className="px-6 py-4 text-center">
@@ -132,6 +128,7 @@ function Perfumes() {
                     )}
                 </div>
             </div>
+            
             {/* Delete Modal */}
             {deleteId && (
                 <div className="fixed inset-0 z-[100] flex items-center bg-black/80 justify-center">
@@ -158,9 +155,8 @@ function Perfumes() {
                     </div>
                 </div>
             )}
-
         </div>
-    );
+    )
 }
 
 export default Perfumes;

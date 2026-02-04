@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Search, Plus, Package, MoreVertical, Edit, Trash2, AlertCircle } from "lucide-react";
+import { Search, Plus, Package, Edit, Trash2, AlertCircle } from "lucide-react";
 
-export default function Inventory() {
+function Inventory() {
+
     const [items, setItems] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [deleteId, setDeleteId] = useState(null);
-
 
     const getInventory = async () => {
         try {
@@ -21,7 +21,6 @@ export default function Inventory() {
         getInventory();
     }, []);
 
-    // Helper to style status badges
     const getStatusStyles = (status) => {
         switch (status) {
             case "In Stock": return "bg-emerald-50 text-emerald-700 ring-emerald-600/20";
@@ -30,17 +29,16 @@ export default function Inventory() {
             default: return "bg-slate-50 text-slate-700 ring-slate-600/20";
         }
     };
+
     const deleteInventory = async () => {
         try {
             await axios.delete(`http://localhost:5000/api/inventory/${deleteId}`);
-            setDeleteId(null);   // close modal
-            getInventory();      // refresh table
+            setDeleteId(null);
+            getInventory();
         } catch (err) {
-            console.error("Delete error:", err);
+            console.error("Delete error : ", err);
         }
     };
-
-
 
     return (
         <div className="min-h-screen bg-[#F8FAFC] font-sans">
@@ -88,7 +86,7 @@ export default function Inventory() {
                             <tbody className="divide-y divide-slate-100">
                                 {items.map((item) => (
                                     <tr key={item._id} className="hover:bg-slate-50/50 transition-colors group">
-                                        <td className="px-6 py-4">
+                                        <td className="px-6 pl-16 py-4">
                                             <div className="flex items-center gap-3">
                                                 <div className="h-10 w-10 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600 border border-indigo-100">
                                                     <Package size={20} />
@@ -151,6 +149,7 @@ export default function Inventory() {
                     )}
                 </div>
             </div>
+
             {/* Delete Modal */}
             {deleteId && (
                 <div className="fixed inset-0 z-[100] flex items-center bg-black/80 justify-center">
@@ -178,7 +177,8 @@ export default function Inventory() {
                     </div>
                 </div>
             )}
-
         </div>
-    );
+    )
 }
+
+export default Inventory
