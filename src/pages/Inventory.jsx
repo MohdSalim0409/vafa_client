@@ -5,6 +5,8 @@ import { Search, Plus, Package, MoreVertical, Edit, Trash2, AlertCircle } from "
 export default function Inventory() {
     const [items, setItems] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
+    const [deleteId, setDeleteId] = useState(null);
+
 
     const getInventory = async () => {
         try {
@@ -28,6 +30,16 @@ export default function Inventory() {
             default: return "bg-slate-50 text-slate-700 ring-slate-600/20";
         }
     };
+    const deleteInventory = async () => {
+        try {
+            await axios.delete(`http://localhost:5000/api/inventory/${deleteId}`);
+            setDeleteId(null);   // close modal
+            getInventory();      // refresh table
+        } catch (err) {
+            console.error("Delete error:", err);
+        }
+    };
+
 
     return (
         <div className="min-h-screen bg-[#F8FAFC] font-sans">
@@ -113,9 +125,13 @@ export default function Inventory() {
                                                 <button className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all">
                                                     <Edit size={18} />
                                                 </button>
-                                                <button className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
+                                                <button
+                                                    onClick={() => setDeleteId(item._id)}
+                                                    className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                                                >
                                                     <Trash2 size={18} />
                                                 </button>
+
                                             </div>
                                         </td>
                                     </tr>
@@ -134,6 +150,34 @@ export default function Inventory() {
                     )}
                 </div>
             </div>
+            {/* Delete Modal */}
+            {deleteId && (
+                <div className="fixed inset-0 z-[100] flex items-center bg-black/80 justify-center">
+                    <div className="bg-white rounded-xl shadow-xl w-80 p-6 text-center">
+                        <h2 className="text-lg font-semibold mb-2">Delete Item</h2>
+                        <p className="text-sm text-slate-500 mb-6">
+                            Are you sure you want to delete this inventory item?
+                        </p>
+
+                        <div className="flex justify-center gap-4">
+                            <button
+                                onClick={() => setDeleteId(null)}
+                                className="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50"
+                            >
+                                Cancel
+                            </button>
+
+                            <button
+                                onClick={deleteInventory}
+                                className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 }
