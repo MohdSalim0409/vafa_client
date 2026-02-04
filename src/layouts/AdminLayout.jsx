@@ -1,7 +1,7 @@
 import React from "react";
 import { Outlet, NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Package, ShoppingBag, Users, LogOut } from "lucide-react";
+import { Package, ShoppingBag, Users, LogOut, Warehouse } from "lucide-react";
 
 function AdminLayout() {
 
@@ -59,6 +59,19 @@ function AdminLayout() {
 					>
 						<Package size={18} />
 						<span className="text-sm font-semibold">Perfume Directory</span>
+					</NavLink>
+
+					<NavLink
+						to="/admin/inventory"
+						className={({ isActive }) =>
+							`flex items-center gap-4 px-4 py-4 rounded-2xl transition-all ${isActive
+								? "bg-black text-white shadow-lg"
+								: "text-gray-500 hover:bg-gray-100 hover:text-black"
+							}`
+						}
+					>
+						<Warehouse size={18} />
+						<span className="text-sm font-semibold">Inventory Control</span>
 					</NavLink>
 
 				</nav>

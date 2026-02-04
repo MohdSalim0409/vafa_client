@@ -6,6 +6,7 @@ import StoreFront from "./pages/StoreFront";
 import Order from './pages/Orders';
 import Users from './pages/Users';
 import Perfumes from './pages/Perfumes';
+import Inventory from './pages/Inventory';
 
 function App() {
 	return (
@@ -17,6 +18,7 @@ function App() {
 					<Route path="orders" element={<Order />} />
 					<Route path="perfumes" element={<Perfumes />} />
 					<Route path="users" element={<Users />} />
+					<Route path="inventory" element={<Inventory />} />
 				</Route>
 			</Routes>
 		</BrowserRouter>
