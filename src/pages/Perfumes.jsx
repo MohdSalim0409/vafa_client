@@ -5,6 +5,7 @@ import { Search, Plus, Droplets, Edit, Trash2, Filter } from "lucide-react";
 function Perfumes() {
     const [perfumes, setPerfumes] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
+    const [deleteId, setDeleteId] = useState(null);
 
     useEffect(() => {
         getPerfumes();
@@ -18,6 +19,7 @@ function Perfumes() {
             console.error(error);
         }
     };
+
 
     return (
         <div className="min-h-screen bg-[#F8FAFC] font-sans">
@@ -93,7 +95,10 @@ function Perfumes() {
                                                 <button className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all">
                                                     <Edit size={18} />
                                                 </button>
-                                                <button className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
+                                                <button
+                                                    onClick={() => setDeleteId(item._id)}
+                                                    className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                                                >
                                                     <Trash2 size={18} />
                                                 </button>
                                             </div>
@@ -114,6 +119,34 @@ function Perfumes() {
                     )}
                 </div>
             </div>
+            {/* Delete Modal */}
+            {deleteId && (
+                <div className="fixed inset-0 z-[100] flex items-center bg-black/80 justify-center">
+                    <div className="bg-white rounded-xl shadow-xl w-80 p-6 text-center">
+                        <h2 className="text-lg font-semibold mb-2">Delete Perfume</h2>
+                        <p className="text-sm text-slate-500 mb-6">
+                            Are you sure you want to delete this perfume?
+                        </p>
+
+                        <div className="flex justify-center gap-4">
+                            <button
+                                onClick={() => setDeleteId(null)}
+                                className="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50"
+                            >
+                                Cancel
+                            </button>
+
+                            <button
+                                // onClick={deletePerfume}
+                                className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 }
