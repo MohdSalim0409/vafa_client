@@ -19,6 +19,19 @@ function Perfumes() {
             console.error(error);
         }
     };
+    const deletePerfume = async () => {
+        try {
+            await axios.delete(`http://localhost:5000/api/perfumes/${deleteId}`);
+
+            // Remove from UI without refresh
+            setPerfumes(perfumes.filter((p) => p._id !== deleteId));
+
+            setDeleteId(null);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
 
 
     return (
@@ -135,9 +148,8 @@ function Perfumes() {
                             >
                                 Cancel
                             </button>
-
                             <button
-                                // onClick={deletePerfume}
+                                onClick={deletePerfume}
                                 className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700"
                             >
                                 Delete

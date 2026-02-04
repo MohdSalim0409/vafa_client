@@ -41,6 +41,7 @@ export default function Inventory() {
     };
 
 
+
     return (
         <div className="min-h-screen bg-[#F8FAFC] font-sans">
             <div className="mx-auto">
