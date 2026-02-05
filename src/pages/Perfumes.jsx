@@ -3,6 +3,16 @@ import axios from 'axios';
 import { Search, Plus, Droplets, Edit, Trash2, Filter } from "lucide-react";
 
 function Perfumes() {
+    const [showModal, setShowModal] = useState(false);
+    const [isEdit, setIsEdit] = useState(false);
+    const [editId, setEditId] = useState(null);
+
+    const [formData, setFormData] = useState({
+        name: "",
+        brand: "",
+        category: "",
+        concentration: ""
+    });
 
     const [perfumes, setPerfumes] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
@@ -29,6 +39,53 @@ function Perfumes() {
             console.error(error);
         }
     };
+    const handleEdit = (item) => {
+        setFormData({
+            name: item.name,
+            brand: item.brand,
+            category: item.category,
+            concentration: item.concentration
+        });
+
+        setEditId(item._id);
+        setIsEdit(true);
+        setShowModal(true);
+    };
+    const addPerfume = async () => {
+        try {
+            const res = await axios.post("http://localhost:5000/api/perfumes", formData);
+            setPerfumes([...perfumes, res.data]);
+            setShowModal(false);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+    const updatePerfume = async () => {
+        try {
+            const res = await axios.put(
+                `http://localhost:5000/api/perfumes/${editId}`,
+                formData
+            );
+
+            setPerfumes(
+                perfumes.map(p => p._id === editId ? res.data : p)
+            );
+
+            setShowModal(false);
+            setIsEdit(false);
+            setEditId(null);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({
+            ...formData,
+            [name]: value
+        });
+    };
+
 
     return (
         <div className="min-h-screen bg-[#F8FAFC] font-sans">
@@ -52,7 +109,14 @@ function Perfumes() {
                                 className="pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500/20 outline-none w-64 transition-all"
                             />
                         </div>
-                        <button className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm shadow-indigo-200">
+                        <button
+                            onClick={() => {
+                                setFormData({ name: "", brand: "", category: "", concentration: "" });
+                                setIsEdit(false);
+                                setShowModal(true);
+                            }}
+                            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold"
+                        >
                             <Plus size={16} />
                             New Perfume
                         </button>
@@ -101,9 +165,13 @@ function Perfumes() {
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex justify-center items-center gap-1">
-                                                <button className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all">
+                                                <button
+                                                    onClick={() => handleEdit(item)}
+                                                    className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
+                                                >
                                                     <Edit size={18} />
                                                 </button>
+
                                                 <button
                                                     onClick={() => setDeleteId(item._id)}
                                                     className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
@@ -128,7 +196,7 @@ function Perfumes() {
                     )}
                 </div>
             </div>
-            
+
             {/* Delete Modal */}
             {deleteId && (
                 <div className="fixed inset-0 z-[100] flex items-center bg-black/80 justify-center">
@@ -155,6 +223,30 @@ function Perfumes() {
                     </div>
                 </div>
             )}
+            {showModal && (
+                <div className="fixed inset-0 z-[100] flex items-center bg-black/80 justify-center">
+                    <div className="bg-white rounded-xl shadow-xl w-96 p-6">
+                        <h2 className="text-lg font-semibold mb-4">
+                            {isEdit ? "Edit Perfume" : "Add Perfume"}
+                        </h2>
+
+                        <div className="space-y-3">
+                            <input name="name" value={formData.name} onChange={handleChange} placeholder="Name" className="input" />
+                            <input name="brand" value={formData.brand} onChange={handleChange} placeholder="Brand" className="input" />
+                            <input name="category" value={formData.category} onChange={handleChange} placeholder="Category" className="input" />
+                            <input name="concentration" value={formData.concentration} onChange={handleChange} placeholder="Concentration" className="input" />
+                        </div>
+
+                        <div className="flex justify-end gap-3 mt-6">
+                            <button onClick={() => setShowModal(false)}>Cancel</button>
+                            <button onClick={isEdit ? updatePerfume : addPerfume}>
+                                {isEdit ? "Update" : "Save"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
         </div>
     )
 }
