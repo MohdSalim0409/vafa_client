@@ -3,7 +3,26 @@ import axios from "axios";
 import { Search, Plus, Package, Edit, Trash2, AlertCircle } from "lucide-react";
 
 function Inventory() {
+    const [showModal, setShowModal] = useState(false);
+    const [isEdit, setIsEdit] = useState(false);
+    const [editId, setEditId] = useState(null);
 
+    const [formData, setFormData] = useState({
+        perfume: "",   // ADD THIS
+        sku: "",
+        batchNumber: "",
+        size: "",
+        status: "In Stock",
+        quantity: "",
+        sellingPrice: "",
+        costPrice: "",
+        reorderLevel: ""
+    });
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+    };
     const [items, setItems] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [deleteId, setDeleteId] = useState(null);
@@ -39,6 +58,62 @@ function Inventory() {
             console.error("Delete error : ", err);
         }
     };
+    const updateInventory = async () => {
+        try {
+            const res = await axios.put(
+                `http://localhost:5000/api/inventory/${editId}`,
+                formData
+            );
+
+            setItems(items.map(i => i._id === editId ? res.data : i));
+            setShowModal(false);
+            setIsEdit(false);
+            setEditId(null);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+    const addInventory = async () => {
+        try {
+            const res = await axios.post(
+                "http://localhost:5000/api/inventory",
+                formData
+            );
+
+            setItems([...items, res.data]);
+            setShowModal(false);
+
+        } catch (err) {
+            console.error("ADD ERROR:", err.response?.data || err.message);
+        }
+    };
+    const [perfumes, setPerfumes] = useState([]);
+
+    const getPerfumes = async () => {
+        const res = await axios.get("http://localhost:5000/api/perfumes");
+        setPerfumes(res.data);
+    };
+
+    useEffect(() => {
+        getInventory();
+        getPerfumes();
+    }, []);
+    const handleEdit = (item) => {
+        setFormData({
+            perfume: item.perfume,   // ADD THIS
+            sku: item.sku,
+            batchNumber: item.batchNumber,
+            size: item.size,
+            status: item.status,
+            quantity: item.quantity,
+            sellingPrice: item.sellingPrice,
+            costPrice: item.costPrice,
+            reorderLevel: item.reorderLevel
+        });
+        setIsEdit(true);
+        setShowModal(true);
+    };  
+
 
     return (
         <div className="min-h-screen bg-[#F8FAFC] font-sans">
@@ -62,10 +137,27 @@ function Inventory() {
                                 className="pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500/20 outline-none w-64 transition-all"
                             />
                         </div>
-                        <button className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm shadow-indigo-200">
+                        <button
+                            onClick={() => {
+                                setFormData({
+                                    sku: "",
+                                    batchNumber: "",
+                                    size: "",
+                                    status: "In Stock",
+                                    quantity: "",
+                                    sellingPrice: "",
+                                    costPrice: "",
+                                    reorderLevel: ""
+                                });
+                                setIsEdit(false);
+                                setShowModal(true);
+                            }}
+                            className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg"
+                        >
                             <Plus size={16} />
                             Add Item
                         </button>
+
                     </div>
                 </div>
 
@@ -121,9 +213,13 @@ function Inventory() {
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex justify-center items-center gap-1">
-                                                <button className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all">
+                                                <button
+                                                    onClick={() => handleEdit(item)}
+                                                    className="p-2 text-slate-400 hover:text-indigo-600"
+                                                >
                                                     <Edit size={18} />
                                                 </button>
+
                                                 <button
                                                     onClick={() => setDeleteId(item._id)}
                                                     className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
@@ -177,6 +273,45 @@ function Inventory() {
                     </div>
                 </div>
             )}
+            {showModal && (
+                <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[100]">
+                    <div className="bg-white w-96 rounded-xl p-6 space-y-3">
+
+                        <h2 className="font-bold text-lg">
+                            {isEdit ? "Edit Item" : "Add Item"}
+                        </h2>
+
+                        <input name="sku" value={formData.sku} onChange={handleChange} placeholder="SKU" className="inputStyle" />
+                        <input name="batchNumber" value={formData.batchNumber} onChange={handleChange} placeholder="Batch" className="inputStyle" />
+                        <input name="size" value={formData.size} onChange={handleChange} placeholder="Size" className="inputStyle" />
+                        <input name="quantity" value={formData.quantity} onChange={handleChange} placeholder="Quantity" className="inputStyle" />
+                        <input name="sellingPrice" value={formData.sellingPrice} onChange={handleChange} placeholder="Selling Price" className="inputStyle" />
+                        <input name="costPrice" value={formData.costPrice} onChange={handleChange} placeholder="Cost Price" className="inputStyle" />
+
+                        <div className="flex justify-end gap-3 pt-3">
+                            <button
+                                type="button"
+                                onClick={() => setShowModal(false)}
+                                className="px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-100"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                onClick={isEdit ? updateInventory : addInventory}
+                                className="px-4 py-2 bg-indigo-600 text-white rounded-lg"
+                            >
+                                {isEdit ? "Update" : "Save"}
+                            </button>
+                            
+
+
+                        </div>
+
+                    </div>
+                </div>
+            )}
+
         </div>
     )
 }
