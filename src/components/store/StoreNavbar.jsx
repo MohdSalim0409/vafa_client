@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from "axios";
 import {
@@ -10,7 +10,35 @@ import {
 function StoreNavbar() {
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
 	const [showLoginModal, setShowLoginModal] = useState(false);
+	const [userRole, setUserRole] = useState(null);
 	const [authView, setAuthView] = useState('login'); // 'login' or 'signup'
+	const [loginData, setLoginData] = useState({
+		phone: "",
+		password: ""
+	});
+	useEffect(() => {
+		const user = sessionStorage.getItem("user");
+		if (user) {
+			setIsLoggedIn(true);
+		}
+	}, []);
+	useEffect(() => {
+		const storedUser = sessionStorage.getItem("user");
+
+		if (storedUser) {
+			const parsedUser = JSON.parse(storedUser);
+			setIsLoggedIn(true);
+			setUserRole(parsedUser.role);
+		}
+	}, []);
+
+	const handleLoginChange = (e) => {
+		setLoginData({
+			...loginData,
+			[e.target.name]: e.target.value
+		});
+	};
+
 
 	const [signupData, setSignupData] = useState({
 		name: "",
@@ -42,21 +70,45 @@ function StoreNavbar() {
 		});
 	};
 	const handleRegister = async () => {
-  try {
-    const res = await axios.post(
-      "http://localhost:5000/api/users/register",
-      signupData
-    );
+		try {
+			const res = await axios.post(
+				"http://localhost:5000/api/users/register",
+				signupData
+			);
 
-    if (res.data.success) {
-      setIsLoggedIn(true);
-      handleClose();
-    }
-  } catch (err) {
-    console.log(err);
-    alert("Registration Failed");
-  }
-};
+			if (res.data.success) {
+				setIsLoggedIn(true);
+				handleClose();
+			}
+		} catch (err) {
+			console.log(err);
+			alert("Registration Failed");
+		}
+	};
+	const handleLogin = async () => {
+		try {
+			const res = await axios.post(
+				"http://localhost:5000/api/users/login",
+				loginData
+			);
+
+			if (res.data.success) {
+				const user = res.data.user;
+
+				sessionStorage.setItem("user", JSON.stringify(user));
+
+				setUserRole(user.role);
+				setIsLoggedIn(true);
+				handleClose();
+			} else {
+				alert(res.data.message);
+			}
+		} catch (err) {
+			console.log(err);
+			alert("Login Failed");
+		}
+	};
+
 
 
 
@@ -98,7 +150,12 @@ function StoreNavbar() {
 								<motion.div key="user-btns" className="flex items-center gap-5">
 									<UserIcon size={18} strokeWidth={1.5} className="cursor-pointer hover:opacity-50" />
 									<ShoppingBag size={18} strokeWidth={1.5} className="cursor-pointer hover:opacity-50" />
-									<button onClick={() => setIsLoggedIn(false)} className="text-neutral-300 hover:text-black transition-colors">
+									<button onClick={() => {
+										sessionStorage.removeItem("user");
+										setIsLoggedIn(false);
+										setUserRole(null);
+									}}
+										className="text-neutral-300 hover:text-black transition-colors">
 										<LogOut size={18} />
 									</button>
 								</motion.div>
@@ -175,17 +232,21 @@ function StoreNavbar() {
 
 											<form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
 												<input
-													type="email"
-													placeholder="EMAIL"
+													type="text"
+													placeholder="PHONE NO"
+													name="phone"
+													onChange={handleLoginChange}
 													className="w-full border-b border-neutral-100 py-3 text-[11px] tracking-widest focus:outline-none focus:border-black transition-all bg-transparent placeholder:text-neutral-300"
 												/>
 												<input
 													type="password"
 													placeholder="PASSWORD"
+													name="password"
+													onChange={handleLoginChange}
 													className="w-full border-b border-neutral-100 py-3 text-[11px] tracking-widest focus:outline-none focus:border-black transition-all bg-transparent placeholder:text-neutral-300"
 												/>
 												<button
-													onClick={() => { setIsLoggedIn(true); handleClose(); }}
+													onClick={handleLogin}
 													className="w-full bg-black text-white py-4 rounded-full flex items-center justify-center gap-3 group transition-all"
 												>
 													<span className="text-[10px] uppercase tracking-[0.3em] font-bold">Sign In</span>
@@ -264,7 +325,7 @@ function StoreNavbar() {
 														type="password"
 														placeholder="••••••••"
 														name="password"
-														onChange={handleSignupChange}	
+														onChange={handleSignupChange}
 														className="w-full border-b border-neutral-100 py-2 text-[11px] tracking-widest focus:outline-none focus:border-black transition-all bg-transparent placeholder:text-neutral-200"
 													/>
 												</div>
