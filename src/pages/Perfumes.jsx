@@ -1,19 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Search, Plus, Droplets, Edit, Trash2, Filter } from "lucide-react";
+import { Search, Plus, Droplets, Edit, Trash2, X } from "lucide-react";
 
 function Perfumes() {
     const [showModal, setShowModal] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
     const [editId, setEditId] = useState(null);
 
-    const [formData, setFormData] = useState({
+    const initialFormState = {
         name: "",
         brand: "",
         category: "",
-        concentration: ""
-    });
+        concentration: "",
+        fragranceFamily: "",
+        topNotes: "",
+        middleNotes: "",
+        baseNotes: "",
+        description: "",
+        images: "",
+        status: true
+    };
 
+    const [formData, setFormData] = useState(initialFormState);
     const [perfumes, setPerfumes] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [deleteId, setDeleteId] = useState(null);
@@ -30,6 +38,7 @@ function Perfumes() {
             console.error(error);
         }
     };
+
     const deletePerfume = async () => {
         try {
             await axios.delete(`http://localhost:5000/api/perfumes/${deleteId}`);
@@ -39,58 +48,61 @@ function Perfumes() {
             console.error(error);
         }
     };
+
     const handleEdit = (item) => {
         setFormData({
-            name: item.name,
-            brand: item.brand,
-            category: item.category,
-            concentration: item.concentration
+            ...item,
+            topNotes: Array.isArray(item.topNotes) ? item.topNotes.join(",") : item.topNotes,
+            middleNotes: Array.isArray(item.middleNotes) ? item.middleNotes.join(",") : item.middleNotes,
+            baseNotes: Array.isArray(item.baseNotes) ? item.baseNotes.join(",") : item.baseNotes,
+            images: Array.isArray(item.images) ? item.images.join(",") : item.images,
         });
-
         setEditId(item._id);
         setIsEdit(true);
         setShowModal(true);
     };
-    const addPerfume = async () => {
+
+    const resetModal = () => {
+        setShowModal(false);
+        setIsEdit(false);
+        setEditId(null);
+        setFormData(initialFormState);
+    };
+
+    const handleSubmit = async () => {
         try {
-            const res = await axios.post("http://localhost:5000/api/perfumes", formData);
-            setPerfumes([...perfumes, res.data]);
-            setShowModal(false);
+            const payload = {
+                ...formData,
+                topNotes: formData.topNotes.split(",").map(s => s.trim()),
+                middleNotes: formData.middleNotes.split(",").map(s => s.trim()),
+                baseNotes: formData.baseNotes.split(",").map(s => s.trim()),
+                images: formData.images.split(",").map(s => s.trim())
+            };
+
+            if (isEdit) {
+                const res = await axios.put(`http://localhost:5000/api/perfumes/${editId}`, payload);
+                setPerfumes(perfumes.map(p => p._id === editId ? res.data : p));
+            } else {
+                const res = await axios.post("http://localhost:5000/api/perfumes", payload);
+                setPerfumes([...perfumes, res.data]);
+            }
+            resetModal();
         } catch (err) {
             console.error(err);
         }
     };
-    const updatePerfume = async () => {
-        try {
-            const res = await axios.put(
-                `http://localhost:5000/api/perfumes/${editId}`,
-                formData
-            );
 
-            setPerfumes(
-                perfumes.map(p => p._id === editId ? res.data : p)
-            );
-
-            setShowModal(false);
-            setIsEdit(false);
-            setEditId(null);
-        } catch (err) {
-            console.error(err);
-        }
-    };
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const { name, value, type, checked } = e.target;
         setFormData({
             ...formData,
-            [name]: value
+            [name]: type === "checkbox" ? checked : value
         });
     };
 
-
     return (
         <div className="min-h-screen bg-[#F8FAFC] font-sans">
-            <div className=" mx-auto">
-
+            <div className="mx-auto px-4 py-8">
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
                     <div>
@@ -103,19 +115,15 @@ function Perfumes() {
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                             <input
                                 type="text"
-                                placeholder="Search perfumes or brands..."
+                                placeholder="Search perfumes..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500/20 outline-none w-64 transition-all"
                             />
                         </div>
                         <button
-                            onClick={() => {
-                                setFormData({ name: "", brand: "", category: "", concentration: "" });
-                                setIsEdit(false);
-                                setShowModal(true);
-                            }}
-                            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold"
+                            onClick={() => { resetModal(); setShowModal(true); }}
+                            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm shadow-indigo-200 transition-all"
                         >
                             <Plus size={16} />
                             New Perfume
@@ -129,7 +137,7 @@ function Perfumes() {
                         <table className="w-full text-left">
                             <thead className="bg-slate-50/50 border-b border-slate-200">
                                 <tr>
-                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">Perfume Name</th>
+                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Product Details</th>
                                     <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">Brand</th>
                                     <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">Category</th>
                                     <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">Concentration</th>
@@ -139,14 +147,14 @@ function Perfumes() {
                             <tbody className="divide-y divide-slate-100">
                                 {perfumes.map((item) => (
                                     <tr key={item._id} className="hover:bg-slate-50/50 transition-colors group">
-                                        <td className="px-6 pl-16 py-4">
+                                        <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
-                                                <div className="h-10 w-10 rounded-lg bg-purple-50 flex items-center justify-center text-purple-600 border border-purple-100">
+                                                <div className="h-10 w-10 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600 border border-indigo-100">
                                                     <Droplets size={20} />
                                                 </div>
                                                 <div>
                                                     <div className="text-sm font-bold text-slate-900">{item.name}</div>
-                                                    <div className="text-[11px] text-slate-500 font-medium">ID: {item._id.substring(0, 8)}...</div>
+                                                    <div className="text-[11px] text-slate-500 font-medium">{item.fragranceFamily}</div>
                                                 </div>
                                             </div>
                                         </td>
@@ -154,7 +162,7 @@ function Perfumes() {
                                             <span className="text-sm font-medium text-slate-700">{item.brand}</span>
                                         </td>
                                         <td className="px-6 py-4 text-center">
-                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold ring-1 ring-inset bg-blue-50 text-blue-700 ring-blue-600/20">
+                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-600/20">
                                                 {item.category}
                                             </span>
                                         </td>
@@ -165,17 +173,10 @@ function Perfumes() {
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex justify-center items-center gap-1">
-                                                <button
-                                                    onClick={() => handleEdit(item)}
-                                                    className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
-                                                >
+                                                <button onClick={() => handleEdit(item)} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all">
                                                     <Edit size={18} />
                                                 </button>
-
-                                                <button
-                                                    onClick={() => setDeleteId(item._id)}
-                                                    className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
-                                                >
+                                                <button onClick={() => setDeleteId(item._id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
                                                     <Trash2 size={18} />
                                                 </button>
                                             </div>
@@ -185,70 +186,121 @@ function Perfumes() {
                             </tbody>
                         </table>
                     </div>
-
-                    {/* Empty State */}
-                    {perfumes.length === 0 && (
-                        <div className="py-20 text-center">
-                            <Droplets className="mx-auto text-slate-200 mb-4" size={48} />
-                            <h3 className="text-slate-900 font-semibold">No perfumes in catalog</h3>
-                            <p className="text-slate-500 text-sm">Start by adding your first fragrance to the master list.</p>
-                        </div>
-                    )}
                 </div>
             </div>
 
-            {/* Delete Modal */}
+            {/* Delete Confirmation Modal */}
             {deleteId && (
-                <div className="fixed inset-0 z-[100] flex items-center bg-black/80 justify-center">
-                    <div className="bg-white rounded-xl shadow-xl w-80 p-6 text-center">
-                        <h2 className="text-lg font-semibold mb-2">Delete Perfume</h2>
-                        <p className="text-sm text-slate-500 mb-6">
-                            Are you sure you want to delete this perfume?
-                        </p>
-
-                        <div className="flex justify-center gap-4">
-                            <button
-                                onClick={() => setDeleteId(null)}
-                                className="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={deletePerfume}
-                                className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700"
-                            >
-                                Delete
-                            </button>
+                <div className="fixed inset-0 z-[110] flex items-center bg-black/60 backdrop-blur-sm justify-center p-4">
+                    <div className="bg-white rounded-xl shadow-xl w-full max-w-sm p-6 text-center animate-in fade-in zoom-in duration-200">
+                        <div className="w-12 h-12 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <Trash2 size={24} />
+                        </div>
+                        <h2 className="text-lg font-bold text-slate-900 mb-2">Confirm Delete</h2>
+                        <p className="text-sm text-slate-500 mb-6">Are you sure you want to remove this perfume? This action cannot be undone.</p>
+                        <div className="flex justify-center gap-3">
+                            <button onClick={() => setDeleteId(null)} className="flex-1 px-4 py-2 rounded-lg border border-slate-200 text-slate-600 font-semibold hover:bg-slate-50 transition-colors">Cancel</button>
+                            <button onClick={deletePerfume} className="flex-1 px-4 py-2 rounded-lg bg-red-600 text-white font-semibold hover:bg-red-700 transition-colors shadow-md shadow-red-100">Delete</button>
                         </div>
                     </div>
                 </div>
             )}
+
+            {/* Main Form Modal */}
             {showModal && (
-                <div className="fixed inset-0 z-[100] flex items-center bg-black/80 justify-center">
-                    <div className="bg-white rounded-xl shadow-xl w-96 p-6">
-                        <h2 className="text-lg font-semibold mb-4">
-                            {isEdit ? "Edit Perfume" : "Add Perfume"}
-                        </h2>
-
-                        <div className="space-y-3">
-                            <input name="name" value={formData.name} onChange={handleChange} placeholder="Name" className="input" />
-                            <input name="brand" value={formData.brand} onChange={handleChange} placeholder="Brand" className="input" />
-                            <input name="category" value={formData.category} onChange={handleChange} placeholder="Category" className="input" />
-                            <input name="concentration" value={formData.concentration} onChange={handleChange} placeholder="Concentration" className="input" />
+                <div className="fixed inset-0 z-[100] flex items-center bg-black/60 backdrop-blur-sm justify-center p-4">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+                        {/* Modal Header */}
+                        <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+                            <div>
+                                <h2 className="text-xl font-bold text-slate-800">{isEdit ? 'Edit Perfume' : 'Add New Perfume'}</h2>
+                                <p className="text-sm text-slate-500">Enter the fragrance profile and specifications.</p>
+                            </div>
+                            <button onClick={resetModal} className="text-slate-400 hover:text-slate-600 p-1"><X size={20} /></button>
                         </div>
 
-                        <div className="flex justify-end gap-3 mt-6">
-                            <button onClick={() => setShowModal(false)}>Cancel</button>
-                            <button onClick={isEdit ? updatePerfume : addPerfume}>
-                                {isEdit ? "Update" : "Save"}
+                        {/* Modal Body */}
+                        <div className="p-6 overflow-y-auto max-h-[75vh]">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-1">
+                                    <label className="text-[11px] font-bold text-slate-500 uppercase px-1">Perfume Name</label>
+                                    <input name="name" value={formData.name} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm" placeholder="e.g. Bleu de Chanel" />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-[11px] font-bold text-slate-500 uppercase px-1">Brand</label>
+                                    <input name="brand" value={formData.brand} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm" placeholder="e.g. Chanel" />
+                                </div>
+
+                                <div className="space-y-1">
+                                    <label className="text-[11px] font-bold text-slate-500 uppercase px-1">Category</label>
+                                    <select name="category" value={formData.category} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm">
+                                        <option value="">Select Category</option>
+                                        <option>Men</option><option>Women</option><option>Unisex</option>
+                                    </select>
+                                </div>
+
+                                <div className="space-y-1">
+                                    <label className="text-[11px] font-bold text-slate-500 uppercase px-1">Concentration</label>
+                                    <select name="concentration" value={formData.concentration} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm">
+                                        <option value="">Select Concentration</option>
+                                        <option>EDT</option><option>EDP</option><option>Parfum</option><option>Eau Fraiche</option>
+                                    </select>
+                                </div>
+
+                                <div className="md:col-span-2 space-y-1">
+                                    <label className="text-[11px] font-bold text-slate-500 uppercase px-1">Fragrance Family</label>
+                                    <select name="fragranceFamily" value={formData.fragranceFamily} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm">
+                                        <option value="">Select Family</option>
+                                        <option>Floral</option><option>Woody</option><option>Fresh</option><option>Oriental</option><option>Citrus</option>
+                                    </select>
+                                </div>
+
+                                <div className="md:col-span-2 space-y-4 py-2">
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-bold text-slate-400 uppercase px-1">Top Notes</label>
+                                            <input name="topNotes" value={formData.topNotes} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-sm" placeholder="Lemon, Mint" />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-bold text-slate-400 uppercase px-1">Middle Notes</label>
+                                            <input name="middleNotes" value={formData.middleNotes} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-sm" placeholder="Ginger, Jasmine" />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-bold text-slate-400 uppercase px-1">Base Notes</label>
+                                            <input name="baseNotes" value={formData.baseNotes} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-sm" placeholder="Cedar, Amber" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="md:col-span-2 space-y-1">
+                                    <label className="text-[11px] font-bold text-slate-500 uppercase px-1">Description</label>
+                                    <textarea name="description" value={formData.description} onChange={handleChange} rows="3" className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm" placeholder="Tell us about the scent..." />
+                                </div>
+
+                                <div className="md:col-span-2 space-y-1">
+                                    <label className="text-[11px] font-bold text-slate-500 uppercase px-1">Image URLs (Comma separated)</label>
+                                    <input name="images" value={formData.images} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl text-sm" placeholder="https://image1.jpg, https://image2.jpg" />
+                                </div>
+
+                                <div className="md:col-span-2 flex items-center gap-2 px-1">
+                                    <input type="checkbox" name="status" checked={formData.status} onChange={handleChange} className="w-4 h-4 text-indigo-600 rounded" id="status-check" />
+                                    <label htmlFor="status-check" className="text-sm font-medium text-slate-700 cursor-pointer">Set as Active in Catalog</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Modal Footer */}
+                        <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
+                            <button onClick={resetModal} className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-slate-800 transition-colors">Cancel</button>
+                            <button onClick={handleSubmit} className="px-8 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-lg shadow-md shadow-indigo-100 transition-all active:scale-95">
+                                {isEdit ? "Update Perfume" : "Save Perfume"}
                             </button>
                         </div>
                     </div>
                 </div>
             )}
-
         </div>
-    )
+    );
 }
 
 export default Perfumes;
