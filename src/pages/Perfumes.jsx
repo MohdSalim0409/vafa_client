@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Search, Plus, Droplets, Edit, Trash2, X } from "lucide-react";
 
 function Perfumes() {
+
     const [showModal, setShowModal] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
     const [editId, setEditId] = useState(null);
@@ -71,31 +72,26 @@ function Perfumes() {
 
     const handleSubmit = async () => {
         try {
-            const data = new FormData();
 
-            Object.keys(formData).forEach(key => {
-                data.append(key, formData[key]);
-            });
+            const data = new FormData();
+            Object.keys(formData).forEach(key => { data.append(key, formData[key]) });
 
             if (isEdit) {
                 const res = await axios.put(
-                    `http://localhost:5000/api/perfumes/${editId}`,
-                    data,
+                    `http://localhost:5000/api/perfumes/${editId}`, data,
                     { headers: { "Content-Type": "multipart/form-data" } }
                 );
                 setPerfumes(perfumes.map(p => p._id === editId ? res.data : p));
             } else {
                 const res = await axios.post(
-                    "http://localhost:5000/api/perfumes",
-                    data,
+                    "http://localhost:5000/api/perfumes", data,
                     { headers: { "Content-Type": "multipart/form-data" } }
                 );
                 setPerfumes([...perfumes, res.data]);
             }
-
             resetModal();
         } catch (err) {
-            console.error(err);
+            console.error('Error in saving data : ', err);
         }
     };
 
@@ -110,6 +106,7 @@ function Perfumes() {
     return (
         <div className="min-h-screen bg-[#F8FAFC] font-sans">
             <div className="mx-auto px-4 py-8">
+
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
                     <div>
@@ -215,101 +212,189 @@ function Perfumes() {
 
             {/* Main Form Modal */}
             {showModal && (
-                <div className="fixed inset-0 z-[100] flex items-center bg-black/60 backdrop-blur-sm justify-center p-4">
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
-                        {/* Modal Header */}
-                        <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col max-h-[80vh] overflow-hidden animate-in fade-in zoom-in duration-200">
+
+                        {/* Modal Header - shrink-0 keeps it from compressing */}
+                        <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center shrink-0">
                             <div>
-                                <h2 className="text-xl font-bold text-slate-800">{isEdit ? 'Edit Perfume' : 'Add New Perfume'}</h2>
+                                <h2 className="text-xl font-bold text-slate-800">
+                                    {isEdit ? 'Edit Perfume' : 'Add New Perfume'}
+                                </h2>
                                 <p className="text-sm text-slate-500">Enter the fragrance profile and specifications.</p>
                             </div>
-                            <button onClick={resetModal} className="text-slate-400 hover:text-slate-600 p-1"><X size={20} /></button>
+                            <button
+                                onClick={resetModal}
+                                className="text-slate-400 hover:text-slate-600 p-1 transition-colors"
+                            >
+                                <X size={20} />
+                            </button>
                         </div>
 
-                        {/* Modal Body */}
-                        <div className="p-6 overflow-y-auto max-h-[75vh]">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-1">
+                        <div className="p-6 overflow-y-auto flex-1">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+
+                                {/* Perfume Name */}
+                                <div className="space-y-1.5">
                                     <label className="text-[11px] font-bold text-slate-500 uppercase px-1">Perfume Name</label>
-                                    <input name="name" value={formData.name} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm" placeholder="e.g. Bleu de Chanel" />
+                                    <input
+                                        name="name"
+                                        value={formData.name}
+                                        onChange={handleChange}
+                                        className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl focus:ring-2 mt-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm"
+                                        placeholder="e.g. Bleu de Chanel"
+                                    />
                                 </div>
-                                <div className="space-y-1">
+
+                                {/* Brand */}
+                                <div className="space-y-1.5">
                                     <label className="text-[11px] font-bold text-slate-500 uppercase px-1">Brand</label>
-                                    <input name="brand" value={formData.brand} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm" placeholder="e.g. Chanel" />
+                                    <input
+                                        name="brand"
+                                        value={formData.brand}
+                                        onChange={handleChange}
+                                        className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl focus:ring-2 mt-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm"
+                                        placeholder="e.g. Chanel"
+                                    />
                                 </div>
 
-                                <div className="space-y-1">
+                                {/* Category */}
+                                <div className="space-y-1.5">
                                     <label className="text-[11px] font-bold text-slate-500 uppercase px-1">Category</label>
-                                    <select name="category" value={formData.category} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm">
+                                    <select
+                                        name="category"
+                                        value={formData.category}
+                                        onChange={handleChange}
+                                        className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl focus:ring-2 mt-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm"
+                                    >
                                         <option value="">Select Category</option>
-                                        <option>Men</option><option>Women</option><option>Unisex</option>
+                                        <option>Men</option>
+                                        <option>Women</option>
+                                        <option>Unisex</option>
                                     </select>
                                 </div>
 
-                                <div className="space-y-1">
+                                {/* Concentration */}
+                                <div className="space-y-1.5">
                                     <label className="text-[11px] font-bold text-slate-500 uppercase px-1">Concentration</label>
-                                    <select name="concentration" value={formData.concentration} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm">
+                                    <select
+                                        name="concentration"
+                                        value={formData.concentration}
+                                        onChange={handleChange}
+                                        className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl focus:ring-2 mt-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm"
+                                    >
                                         <option value="">Select Concentration</option>
-                                        <option>EDT</option><option>EDP</option><option>Parfum</option><option>Eau Fraiche</option>
+                                        <option>EDT</option>
+                                        <option>EDP</option>
+                                        <option>Parfum</option>
+                                        <option>Eau Fraiche</option>
                                     </select>
                                 </div>
 
-                                <div className="md:col-span-2 space-y-1">
+                                {/* Fragrance Family */}
+                                <div className="md:col-span-2 space-y-1.5">
                                     <label className="text-[11px] font-bold text-slate-500 uppercase px-1">Fragrance Family</label>
-                                    <select name="fragranceFamily" value={formData.fragranceFamily} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm">
+                                    <select
+                                        name="fragranceFamily"
+                                        value={formData.fragranceFamily}
+                                        onChange={handleChange}
+                                        className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl focus:ring-2 mt-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm"
+                                    >
                                         <option value="">Select Family</option>
-                                        <option>Floral</option><option>Woody</option><option>Fresh</option><option>Oriental</option><option>Citrus</option>
+                                        <option>Floral</option>
+                                        <option>Woody</option>
+                                        <option>Fresh</option>
+                                        <option>Oriental</option>
+                                        <option>Citrus</option>
                                     </select>
                                 </div>
 
-                                <div className="md:col-span-2 space-y-4 py-2">
+                                {/* Notes Grid */}
+                                <div className="md:col-span-2 py-2">
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                        <div className="space-y-1">
+                                        <div className="space-y-1.5">
                                             <label className="text-[10px] font-bold text-slate-400 uppercase px-1">Top Notes</label>
-                                            <input name="topNotes" value={formData.topNotes} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-sm" placeholder="Lemon, Mint" />
+                                            <input name="topNotes" value={formData.topNotes} onChange={handleChange} className="w-full bg-slate-50 border mt-2 border-slate-200 p-2 rounded-lg text-sm" placeholder="Lemon, Mint" />
                                         </div>
-                                        <div className="space-y-1">
+                                        <div className="space-y-1.5">
                                             <label className="text-[10px] font-bold text-slate-400 uppercase px-1">Middle Notes</label>
-                                            <input name="middleNotes" value={formData.middleNotes} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-sm" placeholder="Ginger, Jasmine" />
+                                            <input name="middleNotes" value={formData.middleNotes} onChange={handleChange} className="w-full bg-slate-50 border mt-2 border-slate-200 p-2 rounded-lg text-sm" placeholder="Ginger, Jasmine" />
                                         </div>
-                                        <div className="space-y-1">
+                                        <div className="space-y-1.5">
                                             <label className="text-[10px] font-bold text-slate-400 uppercase px-1">Base Notes</label>
-                                            <input name="baseNotes" value={formData.baseNotes} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-sm" placeholder="Cedar, Amber" />
+                                            <input name="baseNotes" value={formData.baseNotes} onChange={handleChange} className="w-full mt-2 bg-slate-50 border border-slate-200 p-2 rounded-lg text-sm" placeholder="Cedar, Amber" />
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="md:col-span-2 space-y-1">
+                                {/* Description */}
+                                <div className="md:col-span-2 space-y-1.5">
                                     <label className="text-[11px] font-bold text-slate-500 uppercase px-1">Description</label>
-                                    <textarea name="description" value={formData.description} onChange={handleChange} rows="3" className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm" placeholder="Tell us about the scent..." />
-                                </div>
-
-                                <div className="md:col-span-2 space-y-1">
-                                    <label className="text-[11px] font-bold text-slate-500 uppercase px-1">Image URLs (Comma separated)</label>
-                                    <input
-                                        type="file"
-                                        name="images"
-                                        accept="image/*"
-                                        onChange={(e) =>
-                                            setFormData({
-                                                ...formData,
-                                                images: e.target.files[0]
-                                            })
-                                        }
+                                    <textarea
+                                        name="description"
+                                        value={formData.description}
+                                        onChange={handleChange}
+                                        rows="3"
+                                        className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl focus:ring-2 mt-2 focus:ring-indigo-500/20 outline-none text-sm"
+                                        placeholder="Tell us about the scent..."
                                     />
                                 </div>
 
-                                <div className="md:col-span-2 flex items-center gap-2 px-1">
-                                    <input type="checkbox" name="status" checked={formData.status} onChange={handleChange} className="w-4 h-4 text-indigo-600 rounded" id="status-check" />
-                                    <label htmlFor="status-check" className="text-sm font-medium text-slate-700 cursor-pointer">Set as Active in Catalog</label>
+                                {/* Image Upload */}
+                                <div className="md:col-span-2 space-y-1.5">
+                                    <label className="text-[11px] font-bold text-slate-500 uppercase px-1">Product Image</label>
+                                    <div className="mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-200 border-dashed rounded-xl bg-slate-50/50 hover:bg-slate-50 transition-colors">
+                                        <div className="space-y-1 text-center">
+                                            <svg className="mx-auto h-10 w-10 text-slate-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            </svg>
+                                            <div className="flex text-sm text-slate-600">
+                                                <label className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none px-1">
+                                                    <span>Upload a file</span>
+                                                    <input
+                                                        type="file"
+                                                        name="images"
+                                                        accept="image/*"
+                                                        className="sr-only"
+                                                        onChange={(e) => setFormData({ ...formData, images: e.target.files[0] })}
+                                                    />
+                                                </label>
+                                                <p className="pl-1">or drag and drop</p>
+                                            </div>
+                                            <p className="text-xs text-slate-500">PNG, JPG up to 10MB</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Status Checkbox */}
+                                <div className="md:col-span-2 flex items-center gap-2 px-1 pt-2">
+                                    <input
+                                        type="checkbox"
+                                        name="status"
+                                        checked={formData.status}
+                                        onChange={handleChange}
+                                        className="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500"
+                                        id="status-check"
+                                    />
+                                    <label htmlFor="status-check" className="text-sm font-medium text-slate-700 cursor-pointer">
+                                        Set as Active in Catalog
+                                    </label>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Modal Footer */}
-                        <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
-                            <button onClick={resetModal} className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-slate-800 transition-colors">Cancel</button>
-                            <button onClick={handleSubmit} className="px-8 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-lg shadow-md shadow-indigo-100 transition-all active:scale-95">
+                        {/* Modal Footer - shrink-0 keeps it visible at the bottom */}
+                        <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3 shrink-0">
+                            <button
+                                onClick={resetModal}
+                                className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-slate-800 transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleSubmit}
+                                className="px-8 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-lg shadow-md shadow-indigo-100 transition-all active:scale-95"
+                            >
                                 {isEdit ? "Update Perfume" : "Save Perfume"}
                             </button>
                         </div>

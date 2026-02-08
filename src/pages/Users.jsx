@@ -85,7 +85,7 @@ function User() {
         setEditId(null);
         setFormData({ name: "", password: "", phone: "", address: "" });
     };
-    
+
     return (
         <div className="min-h-screen bg-[#F8FAFC] font-sans">
             <div className=" mx-auto">
@@ -197,7 +197,7 @@ function User() {
 
             {/* Delete Modal */}
             {deleteId && (
-                <div className="fixed inset-0 z-[100] flex items-center bg-black/80 justify-center overflow-y-auto overflow-x-hidden outline-none focus:outline-none">
+                <div className="fixed inset-0 z-[100] flex items-center bg-black/60 justify-center overflow-y-auto overflow-x-hidden outline-none focus:outline-none">
                     <div className="bg-white rounded-xl shadow-xl w-80 p-6 text-center">
                         <h2 className="text-lg font-semibold mb-2">Delete User</h2>
                         <p className="text-sm text-slate-500 mb-6">
@@ -225,7 +225,7 @@ function User() {
 
             {/* Add and Edit User Modal */}
             {showAddModal && (
-                <div className="fixed inset-0 z-[100] flex items-center bg-black/80 justify-center overflow-y-auto overflow-x-hidden outline-none focus:outline-none">
+                <div className="fixed inset-0 z-[100] flex items-center bg-black/60 justify-center overflow-y-auto overflow-x-hidden outline-none focus:outline-none">
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
                         {/* Modal Header */}
                         <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50">
@@ -273,7 +273,7 @@ function User() {
                                 </div>
 
                                 {/* Address Field */}
-                                <div>
+                                <div className="mt-1">
                                     <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 px-1">Residential Address</label>
                                     <input
                                         name="address"
