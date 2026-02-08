@@ -71,21 +71,28 @@ function Perfumes() {
 
     const handleSubmit = async () => {
         try {
-            const payload = {
-                ...formData,
-                topNotes: formData.topNotes.split(",").map(s => s.trim()),
-                middleNotes: formData.middleNotes.split(",").map(s => s.trim()),
-                baseNotes: formData.baseNotes.split(",").map(s => s.trim()),
-                images: formData.images.split(",").map(s => s.trim())
-            };
+            const data = new FormData();
+
+            Object.keys(formData).forEach(key => {
+                data.append(key, formData[key]);
+            });
 
             if (isEdit) {
-                const res = await axios.put(`http://localhost:5000/api/perfumes/${editId}`, payload);
+                const res = await axios.put(
+                    `http://localhost:5000/api/perfumes/${editId}`,
+                    data,
+                    { headers: { "Content-Type": "multipart/form-data" } }
+                );
                 setPerfumes(perfumes.map(p => p._id === editId ? res.data : p));
             } else {
-                const res = await axios.post("http://localhost:5000/api/perfumes", payload);
+                const res = await axios.post(
+                    "http://localhost:5000/api/perfumes",
+                    data,
+                    { headers: { "Content-Type": "multipart/form-data" } }
+                );
                 setPerfumes([...perfumes, res.data]);
             }
+
             resetModal();
         } catch (err) {
             console.error(err);
@@ -279,7 +286,17 @@ function Perfumes() {
 
                                 <div className="md:col-span-2 space-y-1">
                                     <label className="text-[11px] font-bold text-slate-500 uppercase px-1">Image URLs (Comma separated)</label>
-                                    <input name="images" value={formData.images} onChange={handleChange} className="w-full bg-slate-50 border border-slate-200 p-2.5 rounded-xl text-sm" placeholder="https://image1.jpg, https://image2.jpg" />
+                                    <input
+                                        type="file"
+                                        name="images"
+                                        accept="image/*"
+                                        onChange={(e) =>
+                                            setFormData({
+                                                ...formData,
+                                                images: e.target.files[0]
+                                            })
+                                        }
+                                    />
                                 </div>
 
                                 <div className="md:col-span-2 flex items-center gap-2 px-1">
