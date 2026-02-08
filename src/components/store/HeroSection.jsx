@@ -2,6 +2,7 @@ import React from 'react'
 import { motion, AnimatePresence } from 'framer-motion';
 
 function HeroSection() {
+    
     return (
        <section className="px-6 pt-32 pb-12"> 
             <div className="h-[75vh] rounded-[40px] overflow-hidden relative shadow-2xl">

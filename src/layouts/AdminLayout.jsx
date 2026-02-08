@@ -1,9 +1,11 @@
 import React from "react";
-import { Outlet, NavLink } from "react-router-dom";
+import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Package, ShoppingBag, Users, LogOut, Warehouse } from "lucide-react";
 
 function AdminLayout() {
+
+	const navigate = useNavigate();
 
 	return (
 		<motion.div
@@ -34,7 +36,7 @@ function AdminLayout() {
 						<Users size={18} />
 						<span className="text-sm font-semibold">User Directory</span>
 					</NavLink>
-					
+
 					<NavLink
 						to="/admin/perfumes"
 						className={({ isActive }) =>
@@ -76,7 +78,10 @@ function AdminLayout() {
 
 				</nav>
 
-				<button className="flex items-center gap-3 text-red-500 text-sm font-bold p-4 hover:bg-red-50 rounded-xl transition">
+				<button
+					onClick={() => { sessionStorage.removeItem('user'); navigate('/') }}
+					className="flex items-center gap-3 text-red-500 text-sm font-bold p-4 hover:bg-red-50 rounded-xl transition"
+				>
 					<LogOut size={18} /> Logout
 				</button>
 			</aside>

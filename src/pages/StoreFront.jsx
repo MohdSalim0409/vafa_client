@@ -17,13 +17,14 @@ function Storefront() {
 }
 
 const Menus = () => {
+
     const [role, setRole] = useState(null);
 
     useEffect(() => {
         const storedUser = sessionStorage.getItem("user");
         if (storedUser) {
             const user = JSON.parse(storedUser);
-            setRole(user.role);   // "admin" or "user"
+            setRole(user.role);
         }
     }, []);
 
@@ -33,10 +34,7 @@ const Menus = () => {
             {/* STORE – everyone can see */}
             <NavLink
                 to="/"
-                className={({ isActive }) =>
-                    `px-4 py-2 rounded-full text-[10px] font-bold uppercase transition ${isActive ? "bg-black text-white" : "hover:bg-gray-100"
-                    }`
-                }
+                className={({ isActive }) => `px-4 py-2 rounded-full text-[10px] font-bold uppercase transition ${isActive ? "bg-black text-white" : "hover:bg-gray-100"}`}
             >
                 Store
             </NavLink>
@@ -45,10 +43,7 @@ const Menus = () => {
             {role === "user" && (
                 <NavLink
                     to="/customer"
-                    className={({ isActive }) =>
-                        `px-4 py-2 rounded-full text-[10px] font-bold uppercase transition ${isActive ? "bg-black text-white" : "hover:bg-gray-100"
-                        }`
-                    }
+                    className={({ isActive }) => `px-4 py-2 rounded-full text-[10px] font-bold uppercase transition ${isActive ? "bg-black text-white" : "hover:bg-gray-100"}`}
                 >
                     Customer
                 </NavLink>
@@ -57,11 +52,8 @@ const Menus = () => {
             {/* ADMIN – only admin */}
             {role === "admin" && (
                 <NavLink
-                    to="/admin"
-                    className={({ isActive }) =>
-                        `px-4 py-2 rounded-full text-[10px] font-bold uppercase transition ${isActive ? "bg-black text-white" : "hover:bg-gray-100"
-                        }`
-                    }
+                    to="/admin" 
+                    className={({ isActive }) => `px-4 py-2 rounded-full text-[10px] font-bold uppercase transition ${isActive ? "bg-black text-white" : "hover:bg-gray-100"}`}
                 >
                     Admin
                 </NavLink>

@@ -3,6 +3,7 @@ import axios from "axios";
 import { Search, Plus, Package, Edit, Trash2, AlertCircle } from "lucide-react";
 
 function Inventory() {
+
     const [showModal, setShowModal] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
     const [editId, setEditId] = useState(null);
@@ -112,7 +113,7 @@ function Inventory() {
         });
         setIsEdit(true);
         setShowModal(true);
-    };  
+    };
 
 
     return (
@@ -303,7 +304,7 @@ function Inventory() {
                             >
                                 {isEdit ? "Update" : "Save"}
                             </button>
-                            
+
 
 
                         </div>
