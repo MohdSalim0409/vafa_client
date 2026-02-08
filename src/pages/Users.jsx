@@ -125,6 +125,7 @@ function User() {
                                 <tr>
                                     <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">User Details</th>
                                     <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Role</th>
+                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Password</th>
                                     <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Contact</th>
                                     <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Address</th>
                                     <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Actions</th>
@@ -147,6 +148,9 @@ function User() {
                                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-bold bg-indigo-50 text-indigo-700 ring-1 ring-inset ring-indigo-700/10">
                                                 {u.role}
                                             </span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="text-sm text-slate-600 font-medium">{u.password}</div>
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="text-sm text-slate-600 font-medium">{u.phone}</div>
