@@ -105,7 +105,7 @@ function Perfumes() {
 
     return (
         <div className="min-h-screen bg-[#F8FAFC] font-sans">
-            <div className="mx-auto px-4 py-8">
+            <div className="mx-auto">
 
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
@@ -141,7 +141,7 @@ function Perfumes() {
                         <table className="w-full text-left">
                             <thead className="bg-slate-50/50 border-b border-slate-200">
                                 <tr>
-                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Product Details</th>
+                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">Product Details</th>
                                     <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">Brand</th>
                                     <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">Category</th>
                                     <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">Concentration</th>
@@ -151,7 +151,7 @@ function Perfumes() {
                             <tbody className="divide-y divide-slate-100">
                                 {perfumes.map((item) => (
                                     <tr key={item._id} className="hover:bg-slate-50/50 transition-colors group">
-                                        <td className="px-6 py-4">
+                                        <td className="px-6 pl-16 py-4">
                                             <div className="flex items-center gap-3">
                                                 <div className="h-10 w-10 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600 border border-indigo-100">
                                                     <Droplets size={20} />

@@ -2,6 +2,7 @@ import React from "react";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Package, ShoppingBag, Users, LogOut, Warehouse } from "lucide-react";
+import VafaBlack from "../assets/VafaBlack.png";
 
 function AdminLayout() {
 
@@ -16,8 +17,8 @@ function AdminLayout() {
 			{/* Sidebar */}
 			<aside className="w-72 bg-white border-r border-gray-100 p-8 flex flex-col fixed h-full z-[60]">
 				<div className="flex items-center gap-3 mb-12">
-					<div className="w-8 h-8 bg-black rounded-lg" />
-					<h2 className="font-serif text-xl font-bold tracking-tight">
+					<img src={VafaBlack} alt="Vafa Logo" className="w-8 h-8" />
+					<h2 className="font-serif text-xl font-bold tracking-tight text-gray-900">
 						Vafa Admin
 					</h2>
 				</div>

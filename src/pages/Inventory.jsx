@@ -165,10 +165,10 @@ function Inventory() {
                 {/* Main Table Card */}
                 <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
                     <div className="overflow-x-auto">
-                        <table className="w-full text-center">
+                        <table className="w-full text-left">
                             <thead className="bg-slate-50/50 border-b border-slate-200">
                                 <tr>
-                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Product Details</th>
+                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">Product Details</th>
                                     <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">Size</th>
                                     <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">Stock Status</th>
                                     <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">Quantity</th>
