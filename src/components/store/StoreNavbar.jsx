@@ -142,7 +142,7 @@ function StoreNavbar() {
 													<InputField label="Name" name="name" onChange={handleSignupChange} />
 													<InputField label="Phone" name="phone" placeholder="+91" onChange={handleSignupChange} />
 													<div className="col-span-2"><InputField label="Address" name="address" onChange={handleSignupChange} /></div>
-													<div className="col-span-2"><InputField label="Password" type="password" placeholder="••••••••" onChange={handleSignupChange} /></div>
+													<div className="col-span-2"><InputField label="Password" name="password" type="password" placeholder="••••••••" onChange={handleSignupChange} /></div>
 												</div>
 											)}
 
