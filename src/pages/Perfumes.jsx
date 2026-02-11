@@ -52,16 +52,24 @@ function Perfumes() {
 
     const handleEdit = (item) => {
         setFormData({
-            ...item,
-            topNotes: Array.isArray(item.topNotes) ? item.topNotes.join(",") : item.topNotes,
-            middleNotes: Array.isArray(item.middleNotes) ? item.middleNotes.join(",") : item.middleNotes,
-            baseNotes: Array.isArray(item.baseNotes) ? item.baseNotes.join(",") : item.baseNotes,
-            images: Array.isArray(item.images) ? item.images.join(",") : item.images,
+            name: item.name || "",
+            brand: item.brand || "",
+            category: item.category || "",
+            concentration: item.concentration || "",
+            fragranceFamily: item.fragranceFamily || "",
+            topNotes: Array.isArray(item.topNotes) ? item.topNotes.join(",") : item.topNotes || "",
+            middleNotes: Array.isArray(item.middleNotes) ? item.middleNotes.join(",") : item.middleNotes || "",
+            baseNotes: Array.isArray(item.baseNotes) ? item.baseNotes.join(",") : item.baseNotes || "",
+            description: item.description || "",
+            images: "", // IMPORTANT
+            status: item.status ?? true
         });
+
         setEditId(item._id);
         setIsEdit(true);
         setShowModal(true);
     };
+
 
     const resetModal = () => {
         setShowModal(false);
@@ -72,26 +80,34 @@ function Perfumes() {
 
     const handleSubmit = async () => {
         try {
-
             const data = new FormData();
-            Object.keys(formData).forEach(key => { data.append(key, formData[key]) });
+
+            Object.keys(formData).forEach(key => {
+                if (key === "images" && !formData.images) return; // skip empty image
+                data.append(key, formData[key]);
+            });
 
             if (isEdit) {
                 const res = await axios.put(
-                    `http://localhost:5000/api/perfumes/${editId}`, data,
+                    `http://localhost:5000/api/perfumes/${editId}`,
+                    data,
                     { headers: { "Content-Type": "multipart/form-data" } }
                 );
+
                 setPerfumes(perfumes.map(p => p._id === editId ? res.data : p));
             } else {
                 const res = await axios.post(
-                    "http://localhost:5000/api/perfumes", data,
+                    "http://localhost:5000/api/perfumes",
+                    data,
                     { headers: { "Content-Type": "multipart/form-data" } }
                 );
+
                 setPerfumes([...perfumes, res.data]);
             }
+
             resetModal();
         } catch (err) {
-            console.error('Error in saving data : ', err);
+            console.error(err);
         }
     };
 
