@@ -4,12 +4,14 @@ import { NavLink } from "react-router-dom";
 import StoreNavbar from "../components/store/StoreNavbar";
 import HeroSection from "../components/store/HeroSection";
 import AboutSection from "../components/store/AboutSection";
+import PerfumeList from '../components/store/PerfumeList';
 
 function Storefront() {
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <StoreNavbar />
             <HeroSection />
+            <PerfumeList />
             <AboutSection />
             <Menus />
         </motion.div>
