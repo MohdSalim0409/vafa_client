@@ -18,7 +18,7 @@ function User() {
 
     const getUsers = async () => {
         try {
-            const res = await axios.get("http://localhost:5000/api/users");
+            const res = await axios.get("http://localhost:5000/api/userDirectory/fetchUsers");
             setUsers(res.data);
         } catch (err) {
             console.error("Fetch error:", err);
@@ -28,7 +28,7 @@ function User() {
 
     const deleteUser = async () => {
         try {
-            await axios.delete(`http://localhost:5000/api/users/${deleteId}`);
+            await axios.delete(`http://localhost:5000/api/userDirectory//deleteUsers/${deleteId}`);
             setUsers(users.filter(u => u._id !== deleteId));
             setDeleteId(null);
         } catch (err) {
@@ -45,7 +45,7 @@ function User() {
 
     const addUser = async () => {
         try {
-            const res = await axios.post("http://localhost:5000/api/users", formData);
+            const res = await axios.post("http://localhost:5000/api/userDirectory/createUsers/", formData);
             setUsers([res.data, ...users]);
             setShowAddModal(false);
             setFormData({
@@ -71,7 +71,7 @@ function User() {
 
     const updateUser = async () => {
         try {
-            const res = await axios.put(`http://localhost:5000/api/users/${editId}`, formData);
+            const res = await axios.put(`http://localhost:5000/api/userDirectory/updateUsers/${editId}`, formData);
             setUsers(users.map(u => u._id === editId ? res.data : u));
             resetModal();
         } catch (err) {

@@ -33,7 +33,7 @@ function Perfumes() {
 
     const getPerfumes = async () => {
         try {
-            const res = await axios.get("http://localhost:5000/api/perfumes");
+            const res = await axios.get("http://localhost:5000/api/perfumeMasters/fetchPerfumes");
             setPerfumes(res.data);
         } catch (error) {
             console.error(error);
@@ -42,7 +42,7 @@ function Perfumes() {
 
     const deletePerfume = async () => {
         try {
-            await axios.delete(`http://localhost:5000/api/perfumes/${deleteId}`);
+            await axios.delete(`http://localhost:5000/api/perfumeMasters/deletePerfume/${deleteId}`);
             setPerfumes(perfumes.filter((p) => p._id !== deleteId));
             setDeleteId(null);
         } catch (error) {
@@ -89,7 +89,7 @@ function Perfumes() {
 
             if (isEdit) {
                 const res = await axios.put(
-                    `http://localhost:5000/api/perfumes/${editId}`,
+                    `http://localhost:5000/api/perfumeMasters/updatePerfume/${editId}`,
                     data,
                     { headers: { "Content-Type": "multipart/form-data" } }
                 );
@@ -97,7 +97,7 @@ function Perfumes() {
                 setPerfumes(perfumes.map(p => p._id === editId ? res.data : p));
             } else {
                 const res = await axios.post(
-                    "http://localhost:5000/api/perfumes",
+                    "http://localhost:5000/api/perfumeMasters/createPerfume",
                     data,
                     { headers: { "Content-Type": "multipart/form-data" } }
                 );
