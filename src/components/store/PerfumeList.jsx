@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios'; // Ensure you have axios installed: npm install axios
 
 export default function PerfumeList() {
+
     const [perfumes, setPerfumes] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -39,8 +40,8 @@ export default function PerfumeList() {
                             <div className="relative h-[450px] w-full rounded-2xl overflow-hidden mb-4">
                                 {/* Use image from PerfumeMaster model */}
                                 <img
-                                    src={item.perfume.images || 'placeholder.jpg'}
-                                    alt={item.perfume.name}
+                                    src={item?.perfume?.images || 'placeholder.jpg'}
+                                    alt={item?.perfume?.name}
                                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                 />
                                 <span className="absolute bottom-6 left-6 bg-white/20 backdrop-blur-md text-white border border-white/30 px-4 py-1.5 text-xs font-medium rounded-full">

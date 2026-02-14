@@ -37,7 +37,7 @@ function StoreNavbar() {
 
 	const handleRegister = async () => {
 		try {
-			const res = await axios.post('http://localhost:5000/api/users/register', signupData);
+			const res = await axios.post('http://localhost:5000/api/auth/register', signupData);
 			if (res.data.success) {
 				setIsLoggedIn(true);
 				handleClose();
@@ -50,7 +50,7 @@ function StoreNavbar() {
 
 	const handleLogin = async () => {
 		try {
-			const res = await axios.post('http://localhost:5000/api/users/login', loginData);
+			const res = await axios.post('http://localhost:5000/api/auth/login', loginData);
 			if (res.data.success) {
 				const user = res.data.user;
 				sessionStorage.setItem('user', JSON.stringify(user));
