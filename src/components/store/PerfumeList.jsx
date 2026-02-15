@@ -1,82 +1,149 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios'; // Ensure you have axios installed: npm install axios
+import axios from 'axios';
+import { ShoppingCart, Star, ShieldCheck, Zap } from 'lucide-react'; // optional: npm install lucide-react
 
 export default function PerfumeList() {
-
     const [perfumes, setPerfumes] = useState([]);
     const [loading, setLoading] = useState(true);
+    // Track selected variants for each product: { productId: variantObject }
+    const [selectedVariants, setSelectedVariants] = useState({});
 
     useEffect(() => {
         const fetchPerfumes = async () => {
             try {
-                // Adjust this URL to your actual backend server address
                 const response = await axios.get('http://localhost:5000/api/inventory');
                 setPerfumes(response.data);
+
+                // Initialize default variants (first available)
+                const defaults = {};
+                response.data.forEach(p => {
+                    defaults[p._id] = p.variants[0];
+                });
+                setSelectedVariants(defaults);
                 setLoading(false);
             } catch (error) {
                 console.error("Error fetching data:", error);
                 setLoading(false);
             }
         };
-
         fetchPerfumes();
     }, []);
 
-    if (loading) return <div className="text-center py-20">Loading our collection...</div>;
+    const handleVariantChange = (productId, variant) => {
+        setSelectedVariants(prev => ({ ...prev, [productId]: variant }));
+    };
+
+    if (loading) return (
+        <div className="flex justify-center items-center h-screen">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gold-500"></div>
+        </div>
+    );
 
     return (
-        <div className="bg-white min-h-screen py-12">
-            <div className="max-w-7xl mx-auto px-6">
-                <div className="flex justify-between items-end mb-10">
-                    <div>
-                        <h2 className="text-4xl font-serif text-gray-900 italic">The Boutique</h2>
-                        <p className="text-gray-500 mt-2">Live Inventory from our Vault.</p>
-                    </div>
+        <div className="bg-gray-50 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto">
+                {/* Header Section */}
+                <div className="mb-12 border-b border-gray-200 pb-6">
+                    <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">Luxury Fragrances</h2>
+                    <p className="text-lg text-gray-500">Explore our curated collection of authentic scents.</p>
                 </div>
 
-                <div className="flex overflow-x-auto space-x-6 pb-10 scrollbar-hide snap-x snap-mandatory">
-                    {perfumes.map((item) => (
-                        <div key={item._id} className="min-w-[300px] md:min-w-[350px] snap-center group">
-                            <div className="relative h-[450px] w-full rounded-2xl overflow-hidden mb-4">
-                                {/* Use image from PerfumeMaster model */}
-                                <img
-                                    src={item?.perfume?.images || 'placeholder.jpg'}
-                                    alt={item?.perfume?.name}
-                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                />
-                                <span className="absolute bottom-6 left-6 bg-white/20 backdrop-blur-md text-white border border-white/30 px-4 py-1.5 text-xs font-medium rounded-full">
-                                    {item.perfume.fragranceFamily}
-                                </span>
+                {/* Product Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                    {perfumes.map((item) => {
+                        const selected = selectedVariants[item._id];
+                        const master = item.perfume;
+
+                        return (
+                            <div key={item._id} className="group bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 flex flex-col">
+
+                                {/* Image Container */}
+                                <div className="relative aspect-square overflow-hidden bg-gray-100">
+                                    <img
+                                        src={`http://localhost:5000/uploads/${master.images}`}
+                                        alt={master.name}
+                                        className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                                    />
+                                    {selected?.quantity < 5 && selected?.quantity > 0 && (
+                                        <span className="absolute top-2 left-2 bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded uppercase">
+                                            Low Stock
+                                        </span>
+                                    )}
+                                    <button className="absolute top-3 right-3 p-2 bg-white/80 backdrop-blur-md rounded-full shadow-sm hover:bg-white text-gray-600">
+                                        <Star size={18} />
+                                    </button>
+                                </div>
+
+                                {/* Content */}
+                                <div className="p-5 flex flex-col flex-grow">
+                                    <span className="text-xs font-semibold text-blue-600 uppercase tracking-wider">
+                                        {master.brand}
+                                    </span>
+                                    <h3 className="mt-1 text-lg font-bold text-gray-900 truncate">
+                                        {master.name}
+                                    </h3>
+                                    <p className="text-sm text-gray-500 italic mb-3">{master.concentration}</p>
+
+                                    {/* Ratings Mockup */}
+                                    <div className="flex items-center mb-4">
+                                        {[...Array(5)].map((_, i) => (
+                                            <Star key={i} size={14} className="fill-yellow-400 text-yellow-400" />
+                                        ))}
+                                        <span className="ml-2 text-xs text-gray-400">(4.8)</span>
+                                    </div>
+
+                                    {/* Price and Sizes */}
+                                    <div className="mt-auto">
+                                        <div className="flex items-baseline gap-2 mb-3">
+                                            <span className="text-2xl font-bold text-gray-900">
+                                                ${selected?.price}
+                                            </span>
+                                            <span className="text-sm text-gray-400 line-through">
+                                                ${(selected?.price * 1.2).toFixed(2)}
+                                            </span>
+                                        </div>
+
+                                        <div className="flex flex-wrap gap-2 mb-5">
+                                            {item.variants.map((v) => (
+                                                <button
+                                                    key={v.inventoryId}
+                                                    onClick={() => handleVariantChange(item._id, v)}
+                                                    className={`px-3 py-1.5 text-xs font-medium rounded-md border transition-all
+                                                        ${selected?.inventoryId === v.inventoryId
+                                                            ? 'border-black bg-black text-white'
+                                                            : 'border-gray-200 bg-white text-gray-700 hover:border-gray-400'
+                                                        } ${v.quantity === 0 ? 'opacity-50 cursor-not-allowed bg-gray-100' : ''}`}
+                                                    disabled={v.quantity === 0}
+                                                >
+                                                    {v.size}ml
+                                                </button>
+                                            ))}
+                                        </div>
+
+                                        {/* Action Buttons */}
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <button className="flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-900 py-2.5 rounded-lg font-semibold text-sm transition-colors">
+                                                <ShoppingCart size={18} />
+                                                Cart
+                                            </button>
+                                            <button className="flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-500 text-black py-2.5 rounded-lg font-bold text-sm transition-colors shadow-sm">
+                                                <Zap size={18} />
+                                                Buy Now
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Trust Badge */}
+                                <div className="px-5 py-3 bg-gray-50 border-t border-gray-100 flex items-center justify-center gap-2">
+                                    <ShieldCheck size={14} className="text-green-600" />
+                                    <span className="text-[10px] uppercase font-bold text-gray-500 tracking-tight">100% Authentic Product</span>
+                                </div>
                             </div>
-
-                            <div className="text-center">
-                                <p className="text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-1">
-                                    {item.perfume.brand}
-                                </p>
-                                <h3 className="text-lg font-medium text-gray-800">
-                                    {item.perfume.name} — {item.size}ml
-                                </h3>
-                                <p className="text-gray-900 font-semibold mt-1">
-                                    ${item.sellingPrice}
-                                </p>
-
-                                {/* Show stock status based on DB value */}
-                                <p className={`text-[10px] mt-1 ${item.quantity < 5 ? 'text-red-500' : 'text-green-600'}`}>
-                                    {item.status} ({item.quantity} left)
-                                </p>
-
-                                <button
-                                    disabled={item.quantity === 0}
-                                    className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black text-white px-8 py-2 text-sm uppercase tracking-tighter hover:bg-gray-800 disabled:bg-gray-300"
-                                >
-                                    {item.quantity === 0 ? "Out of Stock" : "Add to Cart"}
-                                </button>
-                            </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             </div>
-            {/* ... styles remain same ... */}
         </div>
     );
 }
