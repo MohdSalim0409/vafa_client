@@ -12,6 +12,19 @@ function StoreNavbar() {
 	const [authView, setAuthView] = useState('login');
 	const [loginData, setLoginData] = useState({ phone: '', password: '' });
 	const [signupData, setSignupData] = useState({ name: '', phone: '', address: '', password: '' });
+	const [cartCount, setCartCount] = useState(0);
+	const [showCart, setShowCart] = useState(false);
+	const [cartItems, setCartItems] = useState([]);
+	useEffect(() => {
+		const user = JSON.parse(sessionStorage.getItem("user"));
+		if (user) {
+			axios.get(`/api/cart/${user._id}`).then(res => {
+				setCartCount(res.data.items.length);
+			});
+		}
+	}, []);
+
+
 
 	useEffect(() => {
 		const storedUser = sessionStorage.getItem('user');
@@ -70,6 +83,13 @@ function StoreNavbar() {
 		visible: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.4 } },
 		exit: { opacity: 0, scale: 0.95, y: 20, transition: { duration: 0.3 } }
 	};
+	const openCart = async () => {
+		const user = JSON.parse(sessionStorage.getItem("user"));
+		const res = await axios.get(`/api/cart/${user._id}`);
+		setCartItems(res.data.items);
+		setShowCart(true);
+	};
+
 
 	return (
 		<>
@@ -94,7 +114,15 @@ function StoreNavbar() {
 							) : (
 								<motion.div key="user-btns" className="flex items-center gap-5">
 									<UserIcon size={18} strokeWidth={1.5} className="cursor-pointer hover:opacity-50" />
-									<ShoppingBag size={18} strokeWidth={1.5} className="cursor-pointer hover:opacity-50" />
+									<div className="relative">
+										<ShoppingBag size={18} />
+										{cartCount > 0 && (
+											<span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] px-1 rounded-full">
+												{cartCount}
+											</span>
+										)}
+									</div>
+
 									<button onClick={() => { sessionStorage.removeItem('user'); setIsLoggedIn(false); setUserRole(null); window.location.reload(); }} className="text-neutral-300 hover:text-black transition-colors"><LogOut size={18} /></button>
 								</motion.div>
 							)}
@@ -164,6 +192,20 @@ function StoreNavbar() {
 					</div>
 				)}
 			</AnimatePresence>
+			{showCart && (
+				<div className="fixed right-5 top-20 bg-white shadow-lg p-5 w-80 rounded">
+					{cartItems.map(item => (
+						<div key={item.sku} className="flex gap-3 mb-3">
+							<img src={`/uploads/${item.image}`} className="w-12 h-12" />
+							<div>
+								<p>{item.perfumeName}</p>
+								<p>{item.size}ml</p>
+							</div>
+						</div>
+					))}
+				</div>
+			)}
+
 		</>
 	);
 }

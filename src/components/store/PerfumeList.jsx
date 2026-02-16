@@ -45,6 +45,20 @@ export default function PerfumeList() {
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gold-500"></div>
         </div>
     );
+    const addToCart = async (variant) => {
+        const user = JSON.parse(sessionStorage.getItem("user"));
+
+        if (!user) return alert("Login first");
+
+        await axios.post("http://localhost:5000/api/cart/add", {
+            userId: user._id,
+            inventoryId: variant.inventoryId,
+            quantity: 1
+        });
+
+        alert("Added to cart");
+    };
+
 
     return (
         <div className="bg-gray-50 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
@@ -130,7 +144,7 @@ export default function PerfumeList() {
                                         {/* Action Buttons */}
                                         {isLoggedIn ? (
                                             <div className="grid grid-cols-2 gap-2">
-                                                <button className="flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-900 py-2.5 rounded-lg font-semibold text-sm transition-colors">
+                                                <button onClick={() => addToCart(selected)}  className="flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-900 py-2.5 rounded-lg font-semibold text-sm transition-colors">
                                                     <ShoppingCart size={18} />
                                                     Cart
                                                 </button>
