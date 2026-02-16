@@ -7,6 +7,13 @@ export default function PerfumeList() {
     const [loading, setLoading] = useState(true);
     // Track selected variants for each product: { productId: variantObject }
     const [selectedVariants, setSelectedVariants] = useState({});
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    useEffect(() => {
+        const user = sessionStorage.getItem("user");
+        if (user) setIsLoggedIn(true);
+    }, []);
+
 
     useEffect(() => {
         const fetchPerfumes = async () => {
@@ -121,16 +128,24 @@ export default function PerfumeList() {
                                         </div>
 
                                         {/* Action Buttons */}
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <button className="flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-900 py-2.5 rounded-lg font-semibold text-sm transition-colors">
-                                                <ShoppingCart size={18} />
-                                                Cart
-                                            </button>
-                                            <button className="flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-500 text-black py-2.5 rounded-lg font-bold text-sm transition-colors shadow-sm">
-                                                <Zap size={18} />
-                                                Buy Now
-                                            </button>
-                                        </div>
+                                        {isLoggedIn ? (
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <button className="flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-900 py-2.5 rounded-lg font-semibold text-sm transition-colors">
+                                                    <ShoppingCart size={18} />
+                                                    Cart
+                                                </button>
+
+                                                <button className="flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-500 text-black py-2.5 rounded-lg font-bold text-sm transition-colors shadow-sm">
+                                                    <Zap size={18} />
+                                                    Buy Now
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <p className="text-xs text-red-500 font-semibold text-center">
+                                                Please login to purchase
+                                            </p>
+                                        )}
+
                                     </div>
                                 </div>
 
