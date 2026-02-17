@@ -18,7 +18,8 @@ function StoreNavbar() {
 	useEffect(() => {
 		const user = JSON.parse(sessionStorage.getItem("user"));
 		if (user) {
-			axios.get(`/api/cart/${user._id}`).then(res => {
+			console.log("Fetching cart for user:", user.phone);
+			axios.get(`http://localhost:5000/api/cart/${user.phone}`).then(res => {
 				setCartCount(res.data.items.length);
 			});
 		}

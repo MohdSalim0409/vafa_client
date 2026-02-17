@@ -51,7 +51,7 @@ export default function PerfumeList() {
         if (!user) return alert("Login first");
 
         await axios.post("http://localhost:5000/api/cart/add", {
-            userId: user._id,
+            userId: user.phone,
             inventoryId: variant.inventoryId,
             quantity: 1
         });
