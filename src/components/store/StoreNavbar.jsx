@@ -16,13 +16,38 @@ function StoreNavbar() {
 	const [showCart, setShowCart] = useState(false);
 	const [cartItems, setCartItems] = useState([]);
 	useEffect(() => {
-		const user = JSON.parse(sessionStorage.getItem("user"));
-		if (user) {
-			console.log("Fetching cart for user:", user.phone);
-			axios.get(`http://localhost:5000/api/cart/${user.phone}`).then(res => {
+		const fetchCart = async () => {
+			try {
+				const userData = sessionStorage.getItem("user");
+				console.log("Raw session user:", userData);
+
+				if (!userData) {
+					console.log("No user in sessionStorage");
+					return;
+				}
+
+				const user = JSON.parse(userData);
+				console.log("Parsed user:", user);
+
+				if (!user.phone) {
+					console.log("User phone missing");
+					return;
+				}
+
+				console.log("Fetching cart for user:", user.phone);
+
+				const res = await axios.get(`http://localhost:5000/api/cart/${user.phone}`);
+
+				console.log("Cart response:", res.data);
+
 				setCartCount(res.data.items.length);
-			});
-		}
+
+			} catch (error) {
+				console.error("Error fetching cart:", error);
+			}
+		};
+
+		fetchCart();
 	}, []);
 
 
@@ -85,11 +110,18 @@ function StoreNavbar() {
 		exit: { opacity: 0, scale: 0.95, y: 20, transition: { duration: 0.3 } }
 	};
 	const openCart = async () => {
-		const user = JSON.parse(sessionStorage.getItem("user"));
-		const res = await axios.get(`/api/cart/${user._id}`);
-		setCartItems(res.data.items);
-		setShowCart(true);
+		try {
+			const user = JSON.parse(sessionStorage.getItem("user"));
+			if (!user?.phone) return;
+
+			const res = await axios.get(`http://localhost:5000/api/cart/${user.phone}`);
+			setCartItems(res.data.items || []);
+			setShowCart(true);
+		} catch (err) {
+			console.error("Cart open error:", err);
+		}
 	};
+
 
 
 	return (
@@ -115,14 +147,14 @@ function StoreNavbar() {
 							) : (
 								<motion.div key="user-btns" className="flex items-center gap-5">
 									<UserIcon size={18} strokeWidth={1.5} className="cursor-pointer hover:opacity-50" />
-									<div className="relative">
-										<ShoppingBag size={18} />
-										{cartCount > 0 && (
-											<span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] px-1 rounded-full">
-												{cartCount}
-											</span>
-										)}
-									</div>
+										<div className="relative cursor-pointer" onClick={openCart}>
+											<ShoppingBag size={18} />
+											{cartCount > 0 && (
+												<span className="absolute -top-2 -right-2 bg-black text-white text-[8px] w-4 h-4 flex items-center justify-center rounded-full">
+													{cartCount}
+												</span>
+											)}
+										</div>
 
 									<button onClick={() => { sessionStorage.removeItem('user'); setIsLoggedIn(false); setUserRole(null); window.location.reload(); }} className="text-neutral-300 hover:text-black transition-colors"><LogOut size={18} /></button>
 								</motion.div>
@@ -193,19 +225,88 @@ function StoreNavbar() {
 					</div>
 				)}
 			</AnimatePresence>
-			{showCart && (
-				<div className="fixed right-5 top-20 bg-white shadow-lg p-5 w-80 rounded">
-					{cartItems.map(item => (
-						<div key={item.sku} className="flex gap-3 mb-3">
-							<img src={`/uploads/${item.image}`} className="w-12 h-12" />
-							<div>
-								<p>{item.perfumeName}</p>
-								<p>{item.size}ml</p>
-							</div>
-						</div>
-					))}
-				</div>
-			)}
+			{/* --- Cart Sidebar Drawer --- */}
+<AnimatePresence>
+    {showCart && (
+        <>
+            {/* Backdrop */}
+            <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowCart(false)}
+                className="fixed inset-0 bg-black/30 backdrop-blur-sm z-[110]"
+            />
+
+            {/* Side Drawer */}
+            <motion.div 
+                initial={{ x: '100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '100%' }}
+                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                className="fixed right-0 top-0 h-full w-full max-w-md bg-white z-[120] shadow-2xl flex flex-col"
+            >
+                {/* Cart Header */}
+                <div className="p-8 border-b border-neutral-100 flex justify-between items-center">
+                    <div>
+                        <h2 className="text-xl font-serif tracking-widest uppercase">Your Bag</h2>
+                        <p className="text-[9px] uppercase tracking-[0.2em] text-neutral-400 mt-1">
+                            {cartItems.length} Items Selected
+                        </p>
+                    </div>
+                    <button onClick={() => setShowCart(false)} className="hover:rotate-90 transition-transform duration-300">
+                        <X size={24} strokeWidth={1} />
+                    </button>
+                </div>
+
+                {/* Cart Items List */}
+                <div className="flex-1 overflow-y-auto p-8 space-y-8">
+                    {cartItems.length > 0 ? (
+                        cartItems.map((item, idx) => (
+                            <motion.div 
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: idx * 0.1 }}
+                                key={item.sku || idx} 
+                                className="flex gap-6 items-center group"
+                            >
+                                <div className="w-20 h-24 bg-neutral-100 overflow-hidden rounded-sm">
+                                    <img 
+                                        src={`http://localhost:5000/uploads/${item.image}`} 
+                                        alt={item.perfumeName}
+                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                                    />
+                                </div>
+                                <div className="flex-1">
+                                    <h4 className="text-[11px] uppercase tracking-[0.2em] font-bold text-neutral-800">{item.perfumeName}</h4>
+                                    <p className="text-[10px] text-neutral-400 mt-1 tracking-widest">{item.size}ML / ESSENCE</p>
+                                    <div className="flex justify-between items-center mt-4">
+                                        <span className="text-xs font-light">Qty: {item.quantity || 1}</span>
+                                        <button className="text-[9px] uppercase tracking-tighter border-b border-black">Remove</button>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        ))
+                    ) : (
+                        <div className="h-full flex flex-col items-center justify-center text-neutral-400">
+                            <ShoppingBag size={40} strokeWidth={0.5} />
+                            <p className="mt-4 text-[10px] uppercase tracking-[0.3em]">Your bag is empty</p>
+                        </div>
+                    )}
+                </div>
+
+                {/* Cart Footer */}
+                {cartItems.length > 0 && (
+                    <div className="p-8 bg-neutral-50 border-t border-neutral-100">
+                        <button className="w-full bg-black text-white py-5 text-[10px] uppercase tracking-[0.3em] font-bold hover:bg-neutral-800 transition-colors">
+                            Checkout
+                        </button>
+                    </div>
+                )}
+            </motion.div>
+        </>
+    )}
+</AnimatePresence>
 
 		</>
 	);
