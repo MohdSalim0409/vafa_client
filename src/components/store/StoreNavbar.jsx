@@ -227,85 +227,115 @@ function StoreNavbar() {
 			</AnimatePresence>
 			{/* --- Cart Sidebar Drawer --- */}
 <AnimatePresence>
-    {showCart && (
-        <>
-            {/* Backdrop */}
-            <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setShowCart(false)}
-                className="fixed inset-0 bg-black/30 backdrop-blur-sm z-[110]"
-            />
+				{showCart && (
+					<>
+						{/* Backdrop - Lighter blur for a cleaner glass effect */}
+						<motion.div
+							initial={{ opacity: 0 }}
+							animate={{ opacity: 1 }}
+							exit={{ opacity: 0 }}
+							onClick={() => setShowCart(false)}
+							className="fixed inset-0 bg-neutral-900/40 backdrop-blur-[2px] z-[110]"
+						/>
 
-            {/* Side Drawer */}
-            <motion.div 
-                initial={{ x: '100%' }}
-                animate={{ x: 0 }}
-                exit={{ x: '100%' }}
-                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                className="fixed right-0 top-0 h-full w-full max-w-md bg-white z-[120] shadow-2xl flex flex-col"
-            >
-                {/* Cart Header */}
-                <div className="p-8 border-b border-neutral-100 flex justify-between items-center">
-                    <div>
-                        <h2 className="text-xl font-serif tracking-widest uppercase">Your Bag</h2>
-                        <p className="text-[9px] uppercase tracking-[0.2em] text-neutral-400 mt-1">
-                            {cartItems.length} Items Selected
-                        </p>
-                    </div>
-                    <button onClick={() => setShowCart(false)} className="hover:rotate-90 transition-transform duration-300">
-                        <X size={24} strokeWidth={1} />
-                    </button>
-                </div>
+						{/* Side Drawer */}
+						<motion.div
+							initial={{ x: '100%' }}
+							animate={{ x: 0 }}
+							exit={{ x: '100%' }}
+							transition={{ type: 'spring', damping: 30, stiffness: 200 }}
+							className="fixed right-0 top-0 h-full w-full max-w-lg bg-white z-[120] shadow-[0_0_50px_rgba(0,0,0,0.1)] flex flex-col"
+						>
+							{/* Cart Header - Refined Spacing */}
+							<div className="px-10 py-12 flex justify-between items-end">
+								<div className="space-y-1">
+									<h2 className="text-2xl font-light tracking-[0.15em] uppercase text-neutral-900">The Archive</h2>
+									<p className="text-[10px] uppercase tracking-[0.2em] text-neutral-400 font-medium">
+										{cartItems.length} {cartItems.length === 1 ? 'Selection' : 'Selections'}
+									</p>
+								</div>
+								<button
+									onClick={() => setShowCart(false)}
+									className="p-2 -mr-2 hover:scale-110 transition-all duration-300 group"
+								>
+									<X size={20} strokeWidth={1} className="text-neutral-400 group-hover:text-black" />
+								</button>
+							</div>
 
-                {/* Cart Items List */}
-                <div className="flex-1 overflow-y-auto p-8 space-y-8">
-                    {cartItems.length > 0 ? (
-                        cartItems.map((item, idx) => (
-                            <motion.div 
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: idx * 0.1 }}
-                                key={item.sku || idx} 
-                                className="flex gap-6 items-center group"
-                            >
-                                <div className="w-20 h-24 bg-neutral-100 overflow-hidden rounded-sm">
-                                    <img 
-                                        src={`http://localhost:5000/uploads/${item.image}`} 
-                                        alt={item.perfumeName}
-                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
-                                    />
-                                </div>
-                                <div className="flex-1">
-                                    <h4 className="text-[11px] uppercase tracking-[0.2em] font-bold text-neutral-800">{item.perfumeName}</h4>
-                                    <p className="text-[10px] text-neutral-400 mt-1 tracking-widest">{item.size}ML / ESSENCE</p>
-                                    <div className="flex justify-between items-center mt-4">
-                                        <span className="text-xs font-light">Qty: {item.quantity || 1}</span>
-                                        <button className="text-[9px] uppercase tracking-tighter border-b border-black">Remove</button>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        ))
-                    ) : (
-                        <div className="h-full flex flex-col items-center justify-center text-neutral-400">
-                            <ShoppingBag size={40} strokeWidth={0.5} />
-                            <p className="mt-4 text-[10px] uppercase tracking-[0.3em]">Your bag is empty</p>
-                        </div>
-                    )}
-                </div>
+							{/* Cart Items List */}
+							<div className="flex-1 overflow-y-auto px-10 space-y-10 scrollbar-hide">
+								{cartItems.length > 0 ? (
+									cartItems.map((item, idx) => (
+										<motion.div
+											initial={{ opacity: 0, x: 20 }}
+											animate={{ opacity: 1, x: 0 }}
+											transition={{ delay: idx * 0.05 }}
+											key={item.sku || idx}
+											className="flex gap-8 items-start group"
+										>
+											{/* Image Container - Square, Minimalist */}
+											<div className="relative w-24 aspect-[3/4] bg-[#F9F9F9] overflow-hidden">
+												<img
+													src={`http://localhost:5000/uploads/${item.image}`}
+													alt={item.perfumeName}
+													className="w-full h-full object-contain mix-blend-multiply p-2 group-hover:scale-105 transition-transform duration-700"
+												/>
+											</div>
 
-                {/* Cart Footer */}
-                {cartItems.length > 0 && (
-                    <div className="p-8 bg-neutral-50 border-t border-neutral-100">
-                        <button className="w-full bg-black text-white py-5 text-[10px] uppercase tracking-[0.3em] font-bold hover:bg-neutral-800 transition-colors">
-                            Checkout
-                        </button>
-                    </div>
-                )}
-            </motion.div>
-        </>
-    )}
+											<div className="flex-1 flex flex-col min-h-full py-1">
+												<div className="flex justify-between items-start">
+													<div>
+														<h4 className="text-[12px] uppercase tracking-[0.15em] font-semibold text-neutral-900 leading-tight">
+															{item.perfumeName}
+														</h4>
+														<p className="text-[9px] text-neutral-400 mt-1.5 tracking-widest font-medium">
+															{item.size}ML / EAU DE PARFUM
+														</p>
+													</div>
+													<span className="text-[12px] font-light text-neutral-900">${item.price || '0.00'}</span>
+												</div>
+
+												<div className="flex justify-between items-end mt-auto pt-4">
+													<div className="flex items-center border border-neutral-100 px-3 py-1 gap-4">
+														<button className="text-xs hover:text-neutral-400">-</button>
+														<span className="text-[10px] font-medium w-4 text-center">{item.quantity || 1}</span>
+														<button className="text-xs hover:text-neutral-400">+</button>
+													</div>
+													<button className="text-[9px] uppercase tracking-widest text-neutral-400 hover:text-black border-b border-transparent hover:border-black transition-all pb-0.5">
+														Remove
+													</button>
+												</div>
+											</div>
+										</motion.div>
+									))
+								) : (
+									<div className="h-full flex flex-col items-center justify-center space-y-6">
+										<div className="w-px h-12 bg-neutral-200" />
+										<p className="text-[10px] uppercase tracking-[0.4em] text-neutral-400 italic">Your collection is empty</p>
+										<div className="w-px h-12 bg-neutral-200" />
+									</div>
+								)}
+							</div>
+
+							{/* Cart Footer - Luxury Summary */}
+							{cartItems.length > 0 && (
+								<div className="px-10 py-10 bg-white border-t border-neutral-50">
+									<div className="flex justify-between mb-8">
+										<span className="text-[10px] uppercase tracking-[0.2em] text-neutral-500 font-medium">Subtotal</span>
+										<span className="text-sm font-light tracking-wider">$1,240.00</span>
+									</div>
+									<button className="w-full bg-neutral-900 text-white py-6 text-[11px] uppercase tracking-[0.3em] font-bold hover:bg-black transition-all relative overflow-hidden group">
+										<span className="relative z-10">Proceed to Checkout</span>
+										<div className="absolute inset-0 bg-neutral-800 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+									</button>
+									<p className="text-center mt-6 text-[9px] text-neutral-400 tracking-widest italic">
+										Complimentary shipping on all artisan orders.
+									</p>
+								</div>
+							)}
+						</motion.div>
+					</>
+				)}
 </AnimatePresence>
 
 		</>
