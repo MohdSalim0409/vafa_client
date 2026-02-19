@@ -19,31 +19,25 @@ function StoreNavbar() {
 		const fetchCart = async () => {
 			try {
 				const userData = sessionStorage.getItem("user");
-				console.log("Raw session user:", userData);
 
 				if (!userData) {
-					console.log("No user in sessionStorage");
 					return;
 				}
 
 				const user = JSON.parse(userData);
-				console.log("Parsed user:", user);
 
 				if (!user.phone) {
-					console.log("User phone missing");
 					return;
 				}
 
-				console.log("Fetching cart for user:", user.phone);
 
 				const res = await axios.get(`http://localhost:5000/api/cart/${user.phone}`);
 
-				console.log("Cart response:", res.data);
 
 				setCartCount(res.data.items.length);
 
 			} catch (error) {
-				console.error("Error fetching cart:", error);
+				console.error("Error fetching cart data:", error);
 			}
 		};
 
@@ -121,6 +115,28 @@ function StoreNavbar() {
 			console.error("Cart open error:", err);
 		}
 	};
+	const handleCheckout = async () => {
+		console.log("Initiating checkout...");
+		try {
+			const user = JSON.parse(sessionStorage.getItem("user"));
+			if (!user?.phone) return alert("Login required");
+
+			const res = await axios.post("http://localhost:5000/api/order/checkout", {
+				phone: user.phone
+			});
+
+			if (res.data.success) {
+				alert("Order Placed Successfully 🎉");
+				setCartItems([]);
+				setCartCount(0);
+				setShowCart(false);
+			}
+		} catch (err) {
+			console.error("Checkout error:", err);
+			alert("Checkout Failed");
+		}
+	};
+
 
 
 
@@ -322,9 +338,9 @@ function StoreNavbar() {
 								<div className="px-10 py-10 bg-white border-t border-neutral-50">
 									<div className="flex justify-between mb-8">
 										<span className="text-[10px] uppercase tracking-[0.2em] text-neutral-500 font-medium">Subtotal</span>
-										<span className="text-sm font-light tracking-wider">$1,240.00</span>
+										<span className="text-sm font-light tracking-wider">$1234</span>
 									</div>
-									<button className="w-full bg-neutral-900 text-white py-6 text-[11px] uppercase tracking-[0.3em] font-bold hover:bg-black transition-all relative overflow-hidden group">
+									<button onClick={handleCheckout} className="w-full bg-neutral-900 text-white py-6 text-[11px] uppercase tracking-[0.3em] font-bold hover:bg-black transition-all relative overflow-hidden group">
 										<span className="relative z-10">Proceed to Checkout</span>
 										<div className="absolute inset-0 bg-neutral-800 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
 									</button>
