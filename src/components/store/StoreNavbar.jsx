@@ -136,6 +136,26 @@ function StoreNavbar() {
 			alert("Checkout Failed");
 		}
 	};
+	const handleRemove = async (inventoryId) => {
+		try {
+			const user = JSON.parse(sessionStorage.getItem("user"));
+			if (!user?.phone) return;
+
+			const res = await axios.delete(
+				`http://localhost:5000/api/cart/remove/${user.phone}/${inventoryId}`
+			);
+
+			if (res.data.success) {
+				setCartItems(res.data.items);
+				setCartCount(res.data.cartCount);
+			}
+
+		} catch (err) {
+			console.error("Remove error:", err);
+			alert("Failed to remove item");
+		}
+	};
+
 
 
 
@@ -318,7 +338,10 @@ function StoreNavbar() {
 														<span className="text-[10px] font-medium w-4 text-center">{item.quantity || 1}</span>
 														<button className="text-xs hover:text-neutral-400">+</button>
 													</div>
-													<button className="text-[9px] uppercase tracking-widest text-neutral-400 hover:text-black border-b border-transparent hover:border-black transition-all pb-0.5">
+													<button
+														onClick={() => handleRemove(item.inventory)}
+														className="text-[9px] uppercase tracking-widest text-neutral-400 hover:text-black border-b border-transparent hover:border-black transition-all pb-0.5"
+													>
 														Remove
 													</button>
 												</div>
