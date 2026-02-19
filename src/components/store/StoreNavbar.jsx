@@ -54,6 +54,25 @@ function StoreNavbar() {
 			setUserRole(parsedUser.role);
 		}
 	}, []);
+	useEffect(() => {
+
+		const updateCartFromStorage = () => {
+			const count = sessionStorage.getItem("cartCount");
+			if (count) {
+				setCartCount(Number(count));
+			}
+		};
+
+		updateCartFromStorage();
+
+		window.addEventListener("cartUpdated", updateCartFromStorage);
+
+		return () => {
+			window.removeEventListener("cartUpdated", updateCartFromStorage);
+		};
+
+	}, []);
+
 
 	const handleLoginChange = (e) => {
 		setLoginData({ ...loginData, [e.target.name]: e.target.value });

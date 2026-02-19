@@ -46,18 +46,36 @@ export default function PerfumeList() {
         </div>
     );
     const addToCart = async (variant) => {
-        const user = JSON.parse(sessionStorage.getItem("user"));
+        try {
+            const user = JSON.parse(sessionStorage.getItem("user"));
+            if (!user) return alert("Login first");
 
-        if (!user) return alert("Login first");
+            const res = await axios.post(
+                "http://localhost:5000/api/cart/add",
+                {
+                    userId: user.phone,
+                    inventoryId: variant.inventoryId,
+                    quantity: 1
+                }
+            );
 
-        await axios.post("http://localhost:5000/api/cart/add", {
-            userId: user.phone,
-            inventoryId: variant.inventoryId,
-            quantity: 1
-        });
+            if (res.data.success) {
 
-        alert("Added to cart");
+                // 🔥 Save updated cart count in session
+                sessionStorage.setItem("cartCount", res.data.cartCount);
+
+                // 🔥 Dispatch event to update navbar
+                window.dispatchEvent(new Event("cartUpdated"));
+
+                alert("Added to cart");
+            }
+
+        } catch (err) {
+            console.error(err);
+            alert("Failed to add to cart");
+        }
     };
+
 
 
     return (
