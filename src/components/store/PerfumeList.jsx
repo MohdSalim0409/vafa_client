@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { ShoppingCart, Star, ShieldCheck, Zap } from 'lucide-react'; // optional: npm install lucide-react
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { ShoppingCart, Star, ShieldCheck, Zap } from "lucide-react";
 
-export default function PerfumeList() {
+function PerfumeList() {
+
     const [perfumes, setPerfumes] = useState([]);
     const [loading, setLoading] = useState(true);
-    // Track selected variants for each product: { productId: variantObject }
     const [selectedVariants, setSelectedVariants] = useState({});
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -14,16 +14,13 @@ export default function PerfumeList() {
         if (user) setIsLoggedIn(true);
     }, []);
 
-
     useEffect(() => {
         const fetchPerfumes = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/inventory');
+                const response = await axios.get("http://localhost:5000/api/inventory");
                 setPerfumes(response.data);
-
-                // Initialize default variants (first available)
                 const defaults = {};
-                response.data.forEach(p => {
+                response.data.forEach((p) => {
                     defaults[p._id] = p.variants[0];
                 });
                 setSelectedVariants(defaults);
@@ -37,46 +34,37 @@ export default function PerfumeList() {
     }, []);
 
     const handleVariantChange = (productId, variant) => {
-        setSelectedVariants(prev => ({ ...prev, [productId]: variant }));
+        setSelectedVariants((prev) => ({ ...prev, [productId]: variant }));
     };
 
-    if (loading) return (
-        <div className="flex justify-center items-center h-screen">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gold-500"></div>
-        </div>
-    );
+    if (loading)
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gold-500"></div>
+            </div>
+        );
+
     const addToCart = async (variant) => {
         try {
             const user = JSON.parse(sessionStorage.getItem("user"));
             if (!user) return alert("Login first");
 
-            const res = await axios.post(
-                "http://localhost:5000/api/cart/add",
-                {
-                    userId: user.phone,
-                    inventoryId: variant.inventoryId,
-                    quantity: 1
-                }
-            );
+            const res = await axios.post("http://localhost:5000/api/cart/add", {
+                userId: user.phone,
+                inventoryId: variant.inventoryId,
+                quantity: 1,
+            });
 
             if (res.data.success) {
-
-                // 🔥 Save updated cart count in session
                 sessionStorage.setItem("cartCount", res.data.cartCount);
-
-                // 🔥 Dispatch event to update navbar
                 window.dispatchEvent(new Event("cartUpdated"));
-
                 alert("Added to cart");
             }
-
         } catch (err) {
             console.error(err);
             alert("Failed to add to cart");
         }
     };
-
-
 
     return (
         <div className="bg-gray-50 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
@@ -95,19 +83,10 @@ export default function PerfumeList() {
 
                         return (
                             <div key={item._id} className="group bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 flex flex-col">
-
                                 {/* Image Container */}
                                 <div className="relative aspect-square overflow-hidden bg-gray-100">
-                                    <img
-                                        src={`http://localhost:5000/uploads/${master.images}`}
-                                        alt={master.name}
-                                        className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                                    />
-                                    {selected?.quantity < 5 && selected?.quantity > 0 && (
-                                        <span className="absolute top-2 left-2 bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded uppercase">
-                                            Low Stock
-                                        </span>
-                                    )}
+                                    <img src={`http://localhost:5000/uploads/${master.images}`} alt={master.name} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500" />
+                                    {selected?.quantity < 5 && selected?.quantity > 0 && <span className="absolute top-2 left-2 bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded uppercase">Low Stock</span>}
                                     <button className="absolute top-3 right-3 p-2 bg-white/80 backdrop-blur-md rounded-full shadow-sm hover:bg-white text-gray-600">
                                         <Star size={18} />
                                     </button>
@@ -115,12 +94,8 @@ export default function PerfumeList() {
 
                                 {/* Content */}
                                 <div className="p-5 flex flex-col flex-grow">
-                                    <span className="text-xs font-semibold text-blue-600 uppercase tracking-wider">
-                                        {master.brand}
-                                    </span>
-                                    <h3 className="mt-1 text-lg font-bold text-gray-900 truncate">
-                                        {master.name}
-                                    </h3>
+                                    <span className="text-xs font-semibold text-blue-600 uppercase tracking-wider">{master.brand}</span>
+                                    <h3 className="mt-1 text-lg font-bold text-gray-900 truncate">{master.name}</h3>
                                     <p className="text-sm text-gray-500 italic mb-3">{master.concentration}</p>
 
                                     {/* Ratings Mockup */}
@@ -134,12 +109,8 @@ export default function PerfumeList() {
                                     {/* Price and Sizes */}
                                     <div className="mt-auto">
                                         <div className="flex items-baseline gap-2 mb-3">
-                                            <span className="text-2xl font-bold text-gray-900">
-                                                ${selected?.price}
-                                            </span>
-                                            <span className="text-sm text-gray-400 line-through">
-                                                ${(selected?.price * 1.2).toFixed(2)}
-                                            </span>
+                                            <span className="text-2xl font-bold text-gray-900">${selected?.price}</span>
+                                            <span className="text-sm text-gray-400 line-through">${(selected?.price * 1.2).toFixed(2)}</span>
                                         </div>
 
                                         <div className="flex flex-wrap gap-2 mb-5">
@@ -148,10 +119,7 @@ export default function PerfumeList() {
                                                     key={v.inventoryId}
                                                     onClick={() => handleVariantChange(item._id, v)}
                                                     className={`px-3 py-1.5 text-xs font-medium rounded-md border transition-all
-                                                        ${selected?.inventoryId === v.inventoryId
-                                                            ? 'border-black bg-black text-white'
-                                                            : 'border-gray-200 bg-white text-gray-700 hover:border-gray-400'
-                                                        } ${v.quantity === 0 ? 'opacity-50 cursor-not-allowed bg-gray-100' : ''}`}
+                                                        ${selected?.inventoryId === v.inventoryId ? "border-black bg-black text-white" : "border-gray-200 bg-white text-gray-700 hover:border-gray-400"} ${v.quantity === 0 ? "opacity-50 cursor-not-allowed bg-gray-100" : ""}`}
                                                     disabled={v.quantity === 0}
                                                 >
                                                     {v.size}ml
@@ -162,7 +130,7 @@ export default function PerfumeList() {
                                         {/* Action Buttons */}
                                         {isLoggedIn ? (
                                             <div className="grid grid-cols-2 gap-2">
-                                                <button onClick={() => addToCart(selected)}  className="flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-900 py-2.5 rounded-lg font-semibold text-sm transition-colors">
+                                                <button onClick={() => addToCart(selected)} className="flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-900 py-2.5 rounded-lg font-semibold text-sm transition-colors">
                                                     <ShoppingCart size={18} />
                                                     Cart
                                                 </button>
@@ -173,11 +141,8 @@ export default function PerfumeList() {
                                                 </button>
                                             </div>
                                         ) : (
-                                            <p className="text-xs text-red-500 font-semibold text-center">
-                                                Please login to purchase
-                                            </p>
+                                            <p className="text-xs text-red-500 font-semibold text-center">Please login to purchase</p>
                                         )}
-
                                     </div>
                                 </div>
 
@@ -194,3 +159,5 @@ export default function PerfumeList() {
         </div>
     );
 }
+
+export default PerfumeList
