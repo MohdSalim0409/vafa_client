@@ -155,6 +155,36 @@ function StoreNavbar() {
 			alert("Failed to remove item");
 		}
 	};
+	const handleQuantityChange = async (inventoryId, action) => {
+		console.log(`Changing quantity for inventory ${inventoryId}, action: ${action}`);	
+		try {
+			const user = JSON.parse(sessionStorage.getItem("user"));
+			if (!user?.phone) return;
+
+			const res = await axios.put(
+				"http://localhost:5000/api/cart/update",
+				{
+					phone: user.phone,
+					inventoryId,
+					action
+				}
+			);
+
+			if (res.data.success) {
+				setCartItems(res.data.items);
+				setCartCount(res.data.cartCount);
+			}
+
+		} catch (err) {
+			console.error("Quantity update error:", err);
+
+			if (err.response?.data?.message) {
+				alert(err.response.data.message);
+			} else {
+				alert("Failed to update quantity");
+			}
+		}
+	};
 
 
 
@@ -332,14 +362,28 @@ function StoreNavbar() {
 													</span>
 												</div>
 
-												<div className="flex justify-between items-end mt-auto pt-4">
-													<div className="flex items-center border border-neutral-100 px-3 py-1 gap-4">
-														<button className="text-xs hover:text-neutral-400">-</button>
-														<span className="text-[10px] font-medium w-4 text-center">{item.quantity || 1}</span>
-														<button className="text-xs hover:text-neutral-400">+</button>
-													</div>
+												<div className="flex items-center border border-neutral-100 px-3 py-1 gap-4">
 													<button
-														onClick={() => handleRemove(item.inventory)}
+														onClick={() => handleQuantityChange(item.inventory._id, "decrease")}
+														className="text-xs hover:text-neutral-400"
+													>
+														–
+													</button>
+
+													<span className="text-[10px] font-medium w-4 text-center">
+														{item.quantity}
+													</span>
+
+													<button
+														onClick={() => handleQuantityChange(item.inventory._id, "increase")}
+														className="text-xs hover:text-neutral-400"
+													>
+														+
+													</button>
+												</div>
+												<div className="mt-auto">	
+													<button
+														onClick={() => handleRemove(item.inventory._id)}
 														className="text-[9px] uppercase tracking-widest text-neutral-400 hover:text-black border-b border-transparent hover:border-black transition-all pb-0.5"
 													>
 														Remove
