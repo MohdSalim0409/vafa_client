@@ -163,14 +163,14 @@ function StoreNavbar() {
 							) : (
 								<motion.div key="user-btns" className="flex items-center gap-5">
 									<UserIcon size={18} strokeWidth={1.5} className="cursor-pointer hover:opacity-50" />
-										<div className="relative cursor-pointer" onClick={openCart}>
-											<ShoppingBag size={18} />
-											{cartCount > 0 && (
-												<span className="absolute -top-2 -right-2 bg-black text-white text-[8px] w-4 h-4 flex items-center justify-center rounded-full">
-													{cartCount}
-												</span>
-											)}
-										</div>
+									<div className="relative cursor-pointer" onClick={openCart}>
+										<ShoppingBag size={18} />
+										{cartCount > 0 && (
+											<span className="absolute -top-2 -right-2 bg-black text-white text-[8px] w-4 h-4 flex items-center justify-center rounded-full">
+												{cartCount}
+											</span>
+										)}
+									</div>
 
 									<button onClick={() => { sessionStorage.removeItem('user'); setIsLoggedIn(false); setUserRole(null); window.location.reload(); }} className="text-neutral-300 hover:text-black transition-colors"><LogOut size={18} /></button>
 								</motion.div>
@@ -242,7 +242,7 @@ function StoreNavbar() {
 				)}
 			</AnimatePresence>
 			{/* --- Cart Sidebar Drawer --- */}
-<AnimatePresence>
+			<AnimatePresence>
 				{showCart && (
 					<>
 						{/* Backdrop - Lighter blur for a cleaner glass effect */}
@@ -308,7 +308,8 @@ function StoreNavbar() {
 															{item.size}ML / EAU DE PARFUM
 														</p>
 													</div>
-													<span className="text-[12px] font-light text-neutral-900">${item.price || '0.00'}</span>
+													<span className="text-[12px] font-light text-neutral-900">${item.priceAtTime?.toFixed(2) || '0.00'}
+													</span>
 												</div>
 
 												<div className="flex justify-between items-end mt-auto pt-4">
@@ -352,7 +353,7 @@ function StoreNavbar() {
 						</motion.div>
 					</>
 				)}
-</AnimatePresence>
+			</AnimatePresence>
 
 		</>
 	);
