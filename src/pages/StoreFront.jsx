@@ -5,6 +5,7 @@ import StoreNavbar from "../components/store/StoreNavbar";
 import HeroSection from "../components/store/HeroSection";
 import AboutSection from "../components/store/AboutSection";
 import PerfumeList from '../components/store/PerfumeList';
+import Contact from '../components/store/Contact';
 
 function Storefront() {
     return (
@@ -13,6 +14,7 @@ function Storefront() {
             <HeroSection />
             <PerfumeList />
             <AboutSection />
+            <Contact />
             <Menus />
         </motion.div>
     )
