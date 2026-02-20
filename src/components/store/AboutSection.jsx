@@ -7,8 +7,8 @@ function AboutSection() {
 	const vafaImage = "/images/vafa-bottle.jpg";
 
 	return (
-		<section id="about" className="py-24 px-6 md:px-20 bg-[#f9f8f4] text-[#2d2d2d]">
-			<div className="max-w-7xl mx-auto">
+		<section id="about" className="py-24 px-6 md:px-16 text-[#2d2d2d]">
+			<div className="mx-auto">
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
 
 					{/* Visual Column */}

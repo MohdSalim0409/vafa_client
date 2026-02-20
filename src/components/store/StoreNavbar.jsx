@@ -28,6 +28,7 @@ function StoreNavbar() {
                     return;
                 }
                 const res = await axios.get(`http://localhost:5000/api/cart/${user.phone}`);
+                console.log(res.data)
                 setCartCount(res.data.items.length);
             } catch (error) {
                 console.error("Error fetching cart data:", error);

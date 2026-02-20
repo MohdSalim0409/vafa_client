@@ -67,8 +67,8 @@ function PerfumeList() {
     };
 
     return (
-        <div className="bg-gray-50 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-7xl mx-auto">
+        <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-16">
+            <div className="mx-auto">
                 {/* Header Section */}
                 <div className="mb-12 border-b border-gray-200 pb-6">
                     <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">Luxury Fragrances</h2>
@@ -76,7 +76,7 @@ function PerfumeList() {
                 </div>
 
                 {/* Product Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8">
                     {perfumes.map((item) => {
                         const selected = selectedVariants[item._id];
                         const master = item.perfume;
@@ -84,7 +84,7 @@ function PerfumeList() {
                         return (
                             <div key={item._id} className="group bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 flex flex-col">
                                 {/* Image Container */}
-                                <div className="relative aspect-square overflow-hidden bg-gray-100">
+                                <div className="relative aspect-square overflow-hidden bg-gray-100 h-90">
                                     <img src={`http://localhost:5000/uploads/${master.images}`} alt={master.name} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500" />
                                     {selected?.quantity < 5 && selected?.quantity > 0 && <span className="absolute top-2 left-2 bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded uppercase">Low Stock</span>}
                                     <button className="absolute top-3 right-3 p-2 bg-white/80 backdrop-blur-md rounded-full shadow-sm hover:bg-white text-gray-600">
@@ -96,7 +96,7 @@ function PerfumeList() {
                                 <div className="p-5 flex flex-col flex-grow">
                                     <span className="text-xs font-semibold text-blue-600 uppercase tracking-wider">{master.brand}</span>
                                     <h3 className="mt-1 text-lg font-bold text-gray-900 truncate">{master.name}</h3>
-                                    <p className="text-sm text-gray-500 italic mb-3">{master.concentration}</p>
+                                    <p className="text-sm text-gray-500 italic my-3">{master.concentration}</p>
 
                                     {/* Ratings Mockup */}
                                     <div className="flex items-center mb-4">
@@ -108,7 +108,7 @@ function PerfumeList() {
 
                                     {/* Price and Sizes */}
                                     <div className="mt-auto">
-                                        <div className="flex items-baseline gap-2 mb-3">
+                                        <div className="flex items-baseline gap-2 mb-5">
                                             <span className="text-2xl font-bold text-gray-900">${selected?.price}</span>
                                             <span className="text-sm text-gray-400 line-through">${(selected?.price * 1.2).toFixed(2)}</span>
                                         </div>
@@ -118,7 +118,7 @@ function PerfumeList() {
                                                 <button
                                                     key={v.inventoryId}
                                                     onClick={() => handleVariantChange(item._id, v)}
-                                                    className={`px-3 py-1.5 text-xs font-medium rounded-md border transition-all
+                                                    className={`px-5 py-2.5 text-xs font-medium rounded-md border transition-all
                                                         ${selected?.inventoryId === v.inventoryId ? "border-black bg-black text-white" : "border-gray-200 bg-white text-gray-700 hover:border-gray-400"} ${v.quantity === 0 ? "opacity-50 cursor-not-allowed bg-gray-100" : ""}`}
                                                     disabled={v.quantity === 0}
                                                 >
