@@ -1,119 +1,105 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Package, Calendar, CreditCard, Truck } from "lucide-react";
+import { Package, Calendar, CreditCard, ShoppingBag, Clock } from "lucide-react";
 
 function CustomerLayout() {
-    
-        const [orders, setOrders] = useState([]);
-    
-        useEffect(() => {
-            const user = JSON.parse(sessionStorage.getItem("user"));
-    
-            if (user) {
-                axios.get(`http://localhost:5000/api/order/user/${user.phone}`)
-                    .then(res => setOrders(res.data))
-                    .catch(err => console.error("Error fetching orders:", err));
-            }
-        }, []);
+    const [orders, setOrders] = useState([]);
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const storedUser = JSON.parse(sessionStorage.getItem("user"));
+        if (storedUser) {
+            setUser(storedUser);
+            axios.get(`http://localhost:5000/api/order/user/${storedUser.phone}`)
+                .then(res => {
+                    setOrders(res.data);
+                    setLoading(false);
+                })
+                .catch(err => {
+                    console.error("Error fetching orders:", err);
+                    setLoading(false);
+                });
+        }
+    }, []);
 
     return (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="max-w-6xl mx-auto px-10 pb-20">
-            <div className="flex justify-between items-end mb-12 border-b border-gray-100 pb-8">
+        <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-7xl mx-auto px-4 md:px-10 pb-20 pt-10"
+        >
+            {/* Header Section */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 border-b border-gray-100 pb-8 gap-6">
                 <div>
-                    <h2 className="text-4xl font-serif">Elena Gilbert</h2>
-                    <p className="text-gray-400 text-sm mt-1 uppercase tracking-widest">Private Member</p>
+                    <h2 className="text-4xl font-serif text-slate-900">
+                        {user?.name || "Member Profile"}
+                    </h2>
+                    <p className="text-indigo-500 text-xs mt-2 uppercase tracking-[0.2em] font-bold">
+                        {user?.role || "Private Member"}
+                    </p>
                 </div>
-                <div className="flex gap-10 text-[10px] uppercase font-bold tracking-widest">
-                    <button className="text-black border-b-2 border-black pb-2">Orders</button>
-                    <button>Wishlist</button>
+                <div className="flex gap-8 text-[11px] uppercase font-bold tracking-widest">
+                    <button className="text-black border-b-2 border-black pb-2 transition-all">Orders</button>
+                    <button className="text-gray-400 hover:text-black transition-all pb-2">Wishlist</button>
+                    <button className="text-gray-400 hover:text-black transition-all pb-2">Settings</button>
                 </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Real-time Order Card */}
-                <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Orders Main Table (Spans 2 columns) */}
+                <div className="lg:col-span-2 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+                    <div className="p-6 border-b border-slate-100 flex justify-between items-center">
+                        <h3 className="font-bold text-slate-800 flex items-center gap-2">
+                            <ShoppingBag size={18} /> Recent Orders
+                        </h3>
+                    </div>
+
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
-                            <thead className="bg-slate-50/50 border-b border-slate-200">
+                            <thead className="bg-slate-50/50">
                                 <tr>
-                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">
-                                        Order
-                                    </th>
-                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">
-                                        Date
-                                    </th>
-                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">
-                                        Total
-                                    </th>
-                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">
-                                        Status
-                                    </th>
-                                    <th className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">
-                                        Payment
-                                    </th>
+                                    {["Order", "Date", "Total", "Status", "Payment"].map((head) => (
+                                        <th key={head} className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">
+                                            {head}
+                                        </th>
+                                    ))}
                                 </tr>
                             </thead>
 
                             <tbody className="divide-y divide-slate-100">
-                                {orders.length === 0 ? (
-                                    <tr>
-                                        <td colSpan="5" className="text-center py-10 text-slate-400">
-                                            No Orders Found
-                                        </td>
-                                    </tr>
+                                {loading ? (
+                                    <tr><td colSpan="5" className="text-center py-20 text-slate-400 animate-pulse">Loading your orders...</td></tr>
+                                ) : orders.length === 0 ? (
+                                    <tr><td colSpan="5" className="text-center py-20 text-slate-400">No orders found.</td></tr>
                                 ) : (
                                     orders.map(order => (
-                                        <tr key={order._id} className="hover:bg-slate-50/50 transition-colors">
-
-                                            {/* Order Number */}
-                                            <td className="px-6 py-4 text-center">
+                                        <tr key={order._id} className="hover:bg-slate-50/30 transition-colors group">
+                                            <td className="px-6 py-5 text-center">
                                                 <div className="flex items-center justify-center gap-2">
-                                                    <Package size={18} className="text-indigo-500" />
-                                                    <span className="text-sm font-bold text-slate-800">
-                                                        {order.orderNumber}
+                                                    <span className="text-sm font-bold text-slate-700 group-hover:text-indigo-600 transition-colors">
+                                                        #{order.orderNumber}
                                                     </span>
                                                 </div>
                                             </td>
-
-                                            {/* Date */}
-                                            <td className="px-6 py-4 text-center">
-                                                <div className="flex items-center justify-center gap-2 text-slate-600">
-                                                    <Calendar size={16} />
-                                                    <span className="text-sm">
-                                                        {new Date(order.orderDate).toLocaleDateString()}
-                                                    </span>
-                                                </div>
+                                            <td className="px-6 py-5 text-center text-slate-500 text-sm">
+                                                {new Date(order.orderDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                                             </td>
-
-                                            {/* Total Amount */}
-                                            <td className="px-6 py-4 text-center">
-                                                <span className="text-sm font-semibold text-emerald-600">
-                                                    ₹ {order.totalAmount}
-                                                </span>
+                                            <td className="px-6 py-5 text-center">
+                                                <span className="text-sm font-bold text-slate-900">₹{order.totalAmount}</span>
                                             </td>
-
-                                            {/* Order Status */}
-                                            <td className="px-6 py-4 text-center">
-                                                <span className="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-600/20">
+                                            <td className="px-6 py-5 text-center">
+                                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-tight
+                                                    ${order.orderStatus === 'Delivered' ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'}`}>
                                                     {order.orderStatus}
                                                 </span>
                                             </td>
-
-                                            {/* Payment Status */}
-                                            <td className="px-6 py-4 text-center">
-                                                <div className="flex justify-center items-center gap-2">
-                                                    <CreditCard size={16} className="text-slate-500" />
-                                                    <span className={`text-sm font-semibold ${order.paymentStatus === "Paid"
-                                                        ? "text-green-600"
-                                                        : order.paymentStatus === "Failed"
-                                                            ? "text-red-600"
-                                                            : "text-yellow-600"
-                                                        }`}>
-                                                        {order.paymentStatus}
-                                                    </span>
-                                                </div>
+                                            <td className="px-6 py-5 text-center">
+                                                <span className={`text-[11px] font-bold ${order.paymentStatus === "Paid" ? "text-emerald-500" : "text-rose-500"}`}>
+                                                    {order.paymentStatus}
+                                                </span>
                                             </td>
-
                                         </tr>
                                     ))
                                 )}
@@ -121,9 +107,37 @@ function CustomerLayout() {
                         </table>
                     </div>
                 </div>
+
+                {/* Sidebar Stats */}
+                <div className="space-y-6">
+                    <div className="bg-slate-900 rounded-2xl p-6 text-white shadow-xl shadow-indigo-100">
+                        <div className="flex justify-between items-start mb-4">
+                            <div className="p-2 bg-white/10 rounded-lg"><Package size={20} /></div>
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-300">Overview</span>
+                        </div>
+                        <p className="text-slate-400 text-xs">Total Orders</p>
+                        <h4 className="text-3xl font-serif mt-1">{orders.length}</h4>
+                    </div>
+
+                    <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                        <h4 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
+                            <Clock size={16} className="text-indigo-500" /> Account Summary
+                        </h4>
+                        <div className="space-y-4">
+                            <div className="flex justify-between text-sm">
+                                <span className="text-slate-400">Phone</span>
+                                <span className="font-medium text-slate-700">{user?.phone}</span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                                <span className="text-slate-400">Loyalty Points</span>
+                                <span className="font-medium text-indigo-600">1,250 pts</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </motion.div>
-    )
+    );
 }
 
 export default CustomerLayout;
