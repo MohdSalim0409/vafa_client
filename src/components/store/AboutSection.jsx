@@ -1,8 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import AboutPerfume from '../../assets/AboutPerfume.png';
 
 function AboutSection() {
-	// You can drop your local image path or hosted URL here
+    
 	const vafaImage = "/images/vafa-bottle.jpg";
 
 	return (
@@ -21,9 +22,9 @@ function AboutSection() {
 						{/* Frame for the Image */}
 						<div className="aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl bg-gray-200">
 							<img
-								src={vafaImage}
+								src={AboutPerfume}
 								alt="Vafa Perfume"
-								className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000"
+								className="w-full h-full object-cover grayscal-0 hover:grayscale transition-all duration-1000"
 							/>
 						</div>
 

@@ -4,6 +4,7 @@ import axios from "axios";
 import { Package, Calendar, CreditCard, ShoppingBag, Clock } from "lucide-react";
 
 function CustomerLayout() {
+    
     const [orders, setOrders] = useState([]);
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
