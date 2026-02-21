@@ -60,6 +60,7 @@ function StoreNavbar() {
         };
     }, []);
 
+
     const handleLoginChange = (e) => {
         setLoginData({ ...loginData, [e.target.name]: e.target.value });
     };
@@ -185,6 +186,11 @@ function StoreNavbar() {
             }
         }
     };
+
+    const subtotal = cartItems.reduce(
+        (sum, item) => sum + item.priceAtTime * item.quantity,
+        0
+    );
 
     return (
         <>
@@ -340,7 +346,7 @@ function StoreNavbar() {
                             <div className="flex-1 overflow-y-auto px-10 space-y-10 scrollbar-hide">
                                 {cartItems.length > 0 ? (
                                     cartItems.map((item, idx) => (
-                                        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.05 }} key={item.sku || idx} className="flex gap-8 items-start group">
+                                        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.05 }} key={item.inventory._id || item.inventory} className="flex gap-8 items-start group">
                                             {/* Image Container - Square, Minimalist */}
                                             <div className="relative w-24 aspect-[3/4] bg-[#F9F9F9] overflow-hidden">
                                                 <img src={`http://localhost:5000/uploads/${item.image}`} alt={item.perfumeName} className="w-full h-full object-contain mix-blend-multiply p-2 group-hover:scale-105 transition-transform duration-700" />
@@ -356,18 +362,43 @@ function StoreNavbar() {
                                                 </div>
 
                                                 <div className="flex items-center border border-neutral-100 px-3 py-1 gap-4">
-                                                    <button onClick={() => handleQuantityChange(item.inventory._id, "decrease")} className="text-xs hover:text-neutral-400">
+                                                    <button
+                                                        onClick={() => handleQuantityChange(
+                                                            typeof item.inventory === "object"
+                                                                ? item.inventory._id
+                                                                : item.inventory,
+                                                            "decrease"
+                                                        )}
+                                                        className="text-xs hover:text-neutral-400"
+                                                        disabled={item.quantity <= 1}
+                                                    >
                                                         –
                                                     </button>
 
                                                     <span className="text-[10px] font-medium w-4 text-center">{item.quantity}</span>
 
-                                                    <button onClick={() => handleQuantityChange(item.inventory._id, "increase")} className="text-xs hover:text-neutral-400">
+                                                    <button
+                                                        onClick={() => handleQuantityChange(
+                                                            typeof item.inventory === "object"
+                                                                ? item.inventory._id
+                                                                : item.inventory,
+                                                            "increase"
+                                                        )}
+                                                        className="text-xs hover:text-neutral-400"
+                                                    >
                                                         +
                                                     </button>
                                                 </div>
                                                 <div className="mt-auto">
-                                                    <button onClick={() => handleRemove(item.inventory._id)} className="text-[9px] uppercase tracking-widest text-neutral-400 hover:text-black border-b border-transparent hover:border-black transition-all pb-0.5">
+                                                    <button
+                                                        onClick={() =>
+                                                            handleRemove(
+                                                                typeof item.inventory === "object"
+                                                                    ? item.inventory._id
+                                                                    : item.inventory
+                                                            )
+                                                        }
+                                                        className="text-[9px] uppercase tracking-widest text-neutral-400 hover:text-black border-b border-transparent hover:border-black transition-all pb-0.5">
                                                         Remove
                                                     </button>
                                                 </div>
@@ -388,7 +419,7 @@ function StoreNavbar() {
                                 <div className="px-10 py-10 bg-white border-t border-neutral-50">
                                     <div className="flex justify-between mb-8">
                                         <span className="text-[10px] uppercase tracking-[0.2em] text-neutral-500 font-medium">Subtotal</span>
-                                        <span className="text-sm font-light tracking-wider">$1234</span>
+                                        <span className="text-sm font-light tracking-wider">${subtotal.toFixed(2)}</span>
                                     </div>
                                     <button onClick={handleCheckout} className="w-full bg-neutral-900 text-white py-6 text-[11px] uppercase tracking-[0.3em] font-bold hover:bg-black transition-all relative overflow-hidden group">
                                         <span className="relative z-10">Proceed to Checkout</span>
