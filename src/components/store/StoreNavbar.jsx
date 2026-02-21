@@ -21,6 +21,8 @@ function StoreNavbar() {
     });
 
     // --- Initial Load & Storage Listeners ---
+    // inside StoreNavbar component, update your useEffect:
+
     useEffect(() => {
         const storedUser = sessionStorage.getItem("user");
         if (storedUser) {
@@ -33,8 +35,25 @@ function StoreNavbar() {
             const count = sessionStorage.getItem("cartCount");
             if (count) setCartCount(Number(count));
         };
+
+        // ADD THIS LISTENER
+        const handleOpenDrawer = () => {
+            const user = sessionStorage.getItem("user");
+            if (user) {
+                const parsedUser = JSON.parse(user);
+                fetchCart(parsedUser.phone); // Refresh items to show the new one
+                setShowCart(true);
+                setCheckoutStage("cart"); // Ensure it starts at the cart stage
+            }
+        };
+
         window.addEventListener("cartUpdated", updateCartFromStorage);
-        return () => window.removeEventListener("cartUpdated", updateCartFromStorage);
+        window.addEventListener("openCartDrawer", handleOpenDrawer); // Listen for Buy Now
+
+        return () => {
+            window.removeEventListener("cartUpdated", updateCartFromStorage);
+            window.removeEventListener("openCartDrawer", handleOpenDrawer);
+        };
     }, []);
 
     const fetchCart = async (phone) => {

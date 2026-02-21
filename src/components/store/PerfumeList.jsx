@@ -44,10 +44,11 @@ function PerfumeList() {
             </div>
         );
 
-    const addToCart = async (variant) => {
+
+    const addToCart = async (variant, openDrawer = false) => {
         try {
             const user = JSON.parse(sessionStorage.getItem("user"));
-            if (!user) return alert("Login first");
+            if (!user) return alert("Please login to continue");
 
             const res = await axios.post("http://localhost:5000/api/cart/add", {
                 userId: user.phone,
@@ -57,8 +58,16 @@ function PerfumeList() {
 
             if (res.data.success) {
                 sessionStorage.setItem("cartCount", res.data.cartCount);
+
+                // 1. Update the count icon
                 window.dispatchEvent(new Event("cartUpdated"));
-                alert("Added to cart");
+
+                // 2. If 'Buy Now' was clicked, tell the Navbar to open the drawer
+                if (openDrawer) {
+                    window.dispatchEvent(new Event("openCartDrawer"));
+                } else {
+                    alert("Added to cart");
+                }
             }
         } catch (err) {
             console.error(err);
@@ -130,12 +139,20 @@ function PerfumeList() {
                                         {/* Action Buttons */}
                                         {isLoggedIn ? (
                                             <div className="grid grid-cols-2 gap-2">
-                                                <button onClick={() => addToCart(selected)} className="flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-900 py-2.5 rounded-lg font-semibold text-sm transition-colors">
+                                                {/* Cart Button: Just adds to cart */}
+                                                <button
+                                                    onClick={() => addToCart(selected, false)}
+                                                    className="flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-900 py-2.5 rounded-lg font-semibold text-sm transition-colors"
+                                                >
                                                     <ShoppingCart size={18} />
                                                     Cart
                                                 </button>
 
-                                                <button className="flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-500 text-black py-2.5 rounded-lg font-bold text-sm transition-colors shadow-sm">
+                                                {/* Buy Now Button: Adds to cart AND opens the drawer */}
+                                                <button
+                                                    onClick={() => addToCart(selected, true)}
+                                                    className="flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-500 text-black py-2.5 rounded-lg font-bold text-sm transition-colors shadow-sm"
+                                                >
                                                     <Zap size={18} />
                                                     Buy Now
                                                 </button>
