@@ -5,23 +5,19 @@ import { ShoppingBag, LogOut, X, ArrowRight, User as UserIcon, ChevronLeft } fro
 import VafaPerfume from "../../assets/VafaPerfume.jpeg";
 
 function StoreNavbar() {
-    // --- States ---
+
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [authView, setAuthView] = useState("login");
     const [loginData, setLoginData] = useState({ phone: "", password: "" });
     const [signupData, setSignupData] = useState({ name: "", phone: "", address: "", password: "" });
-
     const [cartCount, setCartCount] = useState(0);
     const [showCart, setShowCart] = useState(false);
     const [cartItems, setCartItems] = useState([]);
-    const [checkoutStage, setCheckoutStage] = useState("cart"); // cart | address | payment
+    const [checkoutStage, setCheckoutStage] = useState("cart"); 
     const [addressData, setAddressData] = useState({
         name: "", phone: "", address: "", city: "", pincode: "", paymentMethod: "COD"
     });
-
-    // --- Initial Load & Storage Listeners ---
-    // inside StoreNavbar component, update your useEffect:
 
     useEffect(() => {
         const storedUser = sessionStorage.getItem("user");
@@ -41,14 +37,14 @@ function StoreNavbar() {
             const user = sessionStorage.getItem("user");
             if (user) {
                 const parsedUser = JSON.parse(user);
-                fetchCart(parsedUser.phone); // Refresh items to show the new one
+                fetchCart(parsedUser.phone); 
                 setShowCart(true);
-                setCheckoutStage("cart"); // Ensure it starts at the cart stage
+                setCheckoutStage("cart");
             }
         };
 
         window.addEventListener("cartUpdated", updateCartFromStorage);
-        window.addEventListener("openCartDrawer", handleOpenDrawer); // Listen for Buy Now
+        window.addEventListener("openCartDrawer", handleOpenDrawer);
 
         return () => {
             window.removeEventListener("cartUpdated", updateCartFromStorage);
