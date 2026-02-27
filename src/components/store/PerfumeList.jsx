@@ -17,7 +17,7 @@ function PerfumeList() {
     useEffect(() => {
         const fetchPerfumes = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/api/inventory");
+                const response = await axios.get("http://localhost:5000/api/perfumes");
                 setPerfumes(response.data);
                 const defaults = {};
                 response.data.forEach((p) => {
@@ -58,11 +58,7 @@ function PerfumeList() {
 
             if (res.data.success) {
                 sessionStorage.setItem("cartCount", res.data.cartCount);
-
-                // 1. Update the count icon
                 window.dispatchEvent(new Event("cartUpdated"));
-
-                // 2. If 'Buy Now' was clicked, tell the Navbar to open the drawer
                 if (openDrawer) {
                     window.dispatchEvent(new Event("openCartDrawer"));
                 } else {

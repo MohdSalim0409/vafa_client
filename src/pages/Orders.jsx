@@ -3,6 +3,7 @@ import axios from "axios";
 import { Package, Calendar, CreditCard, ChevronDown, Search, Filter } from "lucide-react";
 
 function Order() {
+
     const [orders, setOrders] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
@@ -54,7 +55,7 @@ function Order() {
     };
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] font-sans p-4 md:p-8">
+        <div className="min-h-screen bg-[#F8FAFC] font-sans">
             <div className="mx-auto max-w-7xl">
 
                 {/* Header Section - Matched to User.jsx */}

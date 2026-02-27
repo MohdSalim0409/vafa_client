@@ -56,7 +56,7 @@ const Menus = () => {
             {/* ADMIN – only admin */}
             {role === "admin" && (
                 <NavLink
-                    to="/admin/users" 
+                    to="/admin/dashboard" 
                     className={({ isActive }) => `px-4 py-2 rounded-full text-[10px] font-bold uppercase transition ${isActive ? "bg-black text-white" : "hover:bg-gray-100"}`}
                 >
                     Admin

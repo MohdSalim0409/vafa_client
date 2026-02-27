@@ -1,7 +1,7 @@
 import React from "react";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Package, ShoppingBag, Users, LogOut, Warehouse } from "lucide-react";
+import { Package, ShoppingBag, Users, LogOut, Warehouse, LayoutDashboard } from "lucide-react";
 import VafaBlack from "../assets/VafaBlack.png";
 
 function AdminLayout() {
@@ -24,6 +24,19 @@ function AdminLayout() {
 				</div>
 
 				<nav className="space-y-3 flex-1">
+
+					<NavLink
+						to="/admin/dashboard"
+						className={({ isActive }) =>
+							`flex items-center gap-4 px-4 py-4 rounded-2xl transition-all ${isActive
+								? "bg-black text-white shadow-lg"
+								: "text-gray-500 hover:bg-gray-100 hover:text-black"
+							}`
+						}
+					>
+						<LayoutDashboard  size={18} />
+						<span className="text-sm font-semibold">Admin Dashboard</span>
+					</NavLink>
 
 					<NavLink
 						to="/admin/users"

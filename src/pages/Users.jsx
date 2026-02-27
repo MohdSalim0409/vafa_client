@@ -3,6 +3,7 @@ import axios from "axios";
 import { Search, UserPlus, PencilLine, Trash2, Users, MapPin, Phone } from "lucide-react";
 
 function User() {
+
     const [showAddModal, setShowAddModal] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
@@ -87,7 +88,7 @@ function User() {
     );
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] font-sans p-4 md:p-8">
+        <div className="min-h-screen bg-[#F8FAFC] font-sans">
             <div className="mx-auto max-w-7xl">
 
                 {/* Header Section - Matched to Order.jsx */}
@@ -147,7 +148,7 @@ function User() {
                                         <tr key={u._id} className="hover:bg-slate-50/50 transition-colors group">
                                             {/* Avatar & Name - Matched styling to Order Number */}
                                             <td className="px-6 py-4">
-                                                <div className="flex items-center justify-center gap-3">
+                                                <div className="flex items-center pl-12 gap-3">
                                                     <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-50 to-indigo-100 flex items-center justify-center text-indigo-600 font-bold border border-indigo-200 shadow-sm">
                                                         {u.name?.charAt(0).toUpperCase()}
                                                     </div>
