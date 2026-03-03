@@ -12,16 +12,24 @@ function Storefront() {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <StoreNavbar />
             <HeroSection />
-            <PerfumeList />
-            <AboutSection />
-            <Contact />
+            {/* ADDED id="perfume-list" to the PerfumeList section */}
+            <div id="perfume-list">
+                <PerfumeList />
+            </div>
+            {/* ADDED id="about" to the AboutSection */}
+            <div id="about">
+                <AboutSection />
+            </div>
+            {/* ADDED id="contact" to the Contact section */}
+            <div id="contact">
+                <Contact />
+            </div>
             <Menus />
         </motion.div>
     )
 }
 
 const Menus = () => {
-
     const [role, setRole] = useState(null);
 
     useEffect(() => {
@@ -34,8 +42,6 @@ const Menus = () => {
 
     return (
         <div className="fixed bottom-6 left-6 z-[100] flex gap-2 bg-white/90 backdrop-blur-md p-2 rounded-full shadow-xl border border-gray-200">
-
-            {/* STORE – everyone can see */}
             <NavLink
                 to="/"
                 className={({ isActive }) => `px-4 py-2 rounded-full text-[10px] font-bold uppercase transition ${isActive ? "bg-black text-white" : "hover:bg-gray-100"}`}
@@ -43,7 +49,6 @@ const Menus = () => {
                 Store
             </NavLink>
 
-            {/* CUSTOMER – only user */}
             {role === "user" && (
                 <NavLink
                     to="/customer"
@@ -53,10 +58,9 @@ const Menus = () => {
                 </NavLink>
             )}
 
-            {/* ADMIN – only admin */}
             {role === "admin" && (
                 <NavLink
-                    to="/admin/dashboard" 
+                    to="/admin/dashboard"
                     className={({ isActive }) => `px-4 py-2 rounded-full text-[10px] font-bold uppercase transition ${isActive ? "bg-black text-white" : "hover:bg-gray-100"}`}
                 >
                     Admin
@@ -65,6 +69,5 @@ const Menus = () => {
         </div>
     );
 };
-
 
 export default Storefront;

@@ -31,7 +31,7 @@ function AboutSection() {
 						{/* Minimalist Floating Label */}
 						<div className="absolute -bottom-6 -right-4 bg-white px-8 py-6 shadow-lg border border-gray-50">
 							<p className="text-[10px] uppercase tracking-[0.4em] text-gray-400">Origin</p>
-							<p className="font-serif italic text-lg">Paris, France</p>
+							<p className="font-serif italic text-lg">Vafa Edition</p>
 						</div>
 					</motion.div>
 

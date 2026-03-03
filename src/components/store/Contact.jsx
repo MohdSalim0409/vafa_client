@@ -39,19 +39,33 @@ const Contact = () => {
                             <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}>
                                 <h4 className="font-sans text-[9px] tracking-[0.4em] uppercase text-stone-900 font-semibold mb-6">Maison Vafa</h4>
                                 <p className="text-md leading-relaxed font-light italic text-stone-600">
-                                    12 Rue de Castiglione, 75001 Paris
+                                    old fish market, chittarkottai, Ramanathapuram
                                     <br />
-                                    concierge@vafa.fr
+                                    vafaperfume2025@gmail.com
                                     <br />
-                                    +33 (0) 1 40 20 01 01
+                                    +91 8681045053
                                 </p>
                             </motion.section>
 
-                            <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="flex gap-10 font-sans text-[10px] tracking-widest uppercase text-stone-400">
-                                <a href="#" className="hover:text-stone-900 transition-colors border-b border-transparent hover:border-stone-900 pb-1">
+                            <motion.section
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.5 }}
+                                className="flex gap-10 font-sans text-[10px] tracking-widest uppercase text-stone-400"
+                            >
+                                <a
+                                    href="https://www.instagram.com/vafa_perfumes?igsh=MTVobTdncnIzeTVseQ=="
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="hover:text-stone-900 transition-colors border-b border-transparent hover:border-stone-900 pb-1"
+                                >
                                     Instagram
                                 </a>
-                                <a href="#" className="hover:text-stone-900 transition-colors border-b border-transparent hover:border-stone-900 pb-1">
+
+                                <a
+                                    href="#"
+                                    className="hover:text-stone-900 transition-colors border-b border-transparent hover:border-stone-900 pb-1"
+                                >
                                     Archive
                                 </a>
                             </motion.section>
@@ -87,7 +101,7 @@ const Contact = () => {
                     <span className="text-3xl font-light italic mb-4">Vafa</span>
                     <div className="flex gap-4 items-center">
                         <div className="h-px w-10 bg-stone-200" />
-                        <p className="font-sans text-[8px] tracking-[1.2em] text-stone-300 uppercase">Paris Grasse Dubai</p>
+                        <p className="font-sans text-[8px] tracking-[1.2em] text-stone-300 uppercase"> Vafa Edition Dubai</p>
                         <div className="h-px w-10 bg-stone-200" />
                     </div>
                 </div>

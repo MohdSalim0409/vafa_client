@@ -52,6 +52,21 @@ function StoreNavbar() {
         };
     }, []);
 
+    // ADD SCROLL FUNCTION
+    const scrollToSection = (sectionId) => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+            const navbarHeight = 100; // Adjust based on your navbar height
+            const elementPosition = element.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - navbarHeight;
+
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: "smooth"
+            });
+        }
+    };
+
     const fetchCart = async (phone) => {
         try {
             const res = await axios.get(`http://localhost:5000/api/cart/${phone}`);
@@ -122,8 +137,27 @@ function StoreNavbar() {
             <nav className="fixed top-0 w-full z-50 px-6 md:px-10 py-6">
                 <div className="max-w-7xl mx-auto flex justify-between items-center bg-white/70 backdrop-blur-xl border border-white/20 px-8 py-4 rounded-full shadow-sm">
                     <div className="hidden md:flex gap-8 text-[10px] uppercase font-bold tracking-[0.25em] text-gray-800">
-                        <a href="#shop" className="hover:text-neutral-400 transition-colors">Collection</a>
-                        <a href="#story" className="hover:text-neutral-400 transition-colors">The Atelier</a>
+
+                        <button
+                            onClick={() => scrollToSection("perfume-list")}
+                            className="hover:text-neutral-400 transition-colors"
+                        >
+                            Collection
+                        </button>
+
+                        <button
+                            onClick={() => scrollToSection("about")}
+                            className="hover:text-neutral-400 transition-colors"
+                        >
+                            About
+                        </button>
+
+                        <button
+                            onClick={() => scrollToSection("contact")}
+                            className="hover:text-neutral-400 transition-colors"
+                        >
+                            Contact
+                        </button>
                     </div>
                     <div className="absolute left-1/2 -translate-x-1/2">
                         <h1 className="text-lg font-serif tracking-[1em] uppercase font-light text-neutral-800">VAFAPERFUME</h1>
