@@ -43,8 +43,7 @@ function CustomerLayout() {
                 </div>
                 <div className="flex gap-8 text-[11px] uppercase font-bold tracking-widest">
                     <button className="text-black border-b-2 border-black pb-2 transition-all">Orders</button>
-                    <button className="text-gray-400 hover:text-black transition-all pb-2">Wishlist</button>
-                    <button className="text-gray-400 hover:text-black transition-all pb-2">Settings</button>
+                    <button className="text-gray-400 hover:text-black transition-all pb-2">Profile</button>
                 </div>
             </div>
 
