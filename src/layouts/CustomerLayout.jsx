@@ -1,142 +1,272 @@
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Package, Calendar, CreditCard, ShoppingBag, Clock } from "lucide-react";
+import {
+    Package,
+    ShoppingBag,
+    Clock,
+    User,
+    ShieldCheck,
+    CreditCard,
+    ChevronRight,
+    LogOut
+} from "lucide-react";
 
 function CustomerLayout() {
-    
     const [orders, setOrders] = useState([]);
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState("orders");
+    const [isSaving, setIsSaving] = useState(false);
 
     useEffect(() => {
         const storedUser = JSON.parse(sessionStorage.getItem("user"));
         if (storedUser) {
             setUser(storedUser);
-            axios.get(`http://localhost:5000/api/order/user/${storedUser.phone}`)
-                .then(res => {
+            axios
+                .get(`http://localhost:5000/api/order/user/${storedUser.phone}`)
+                .then((res) => {
                     setOrders(res.data);
                     setLoading(false);
                 })
-                .catch(err => {
+                .catch((err) => {
                     console.error("Error fetching orders:", err);
                     setLoading(false);
                 });
         }
     }, []);
 
+    const handleEditProfile = () => {
+        setIsSaving(true);
+        // Simulate an API call
+        setTimeout(() => setIsSaving(false), 1500);
+    };
+
     return (
         <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mx-auto px-4 md:px-10 pb-20 pt-10"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="min-h-screen bg-slate-50/50 mx-auto px-4 md:px-10 pb-20 pt-10"
         >
-            {/* Header Section */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 border-b border-gray-100 pb-8 gap-6">
+            {/* --- Header Section --- */}
+            <header className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 border-b border-slate-200 pb-8 gap-6">
                 <div>
-                    <h2 className="text-4xl font-serif text-slate-900">
+                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-500 mb-2 block">
+                        Account Dashboard
+                    </span>
+                    <h2 className="text-4xl font-serif text-slate-900 tracking-tight">
                         {user?.name || "Member Profile"}
                     </h2>
-                    <p className="text-indigo-500 text-xs mt-2 uppercase tracking-[0.2em] font-bold">
-                        {user?.role || "Private Member"}
-                    </p>
                 </div>
-                <div className="flex gap-8 text-[11px] uppercase font-bold tracking-widest">
-                    <button className="text-black border-b-2 border-black pb-2 transition-all">Orders</button>
-                    <button className="text-gray-400 hover:text-black transition-all pb-2">Profile</button>
-                </div>
-            </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Orders Main Table (Spans 2 columns) */}
-                <div className="lg:col-span-2 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
-                    <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-                        <h3 className="font-bold text-slate-800 flex items-center gap-2">
-                            <ShoppingBag size={18} /> Recent Orders
-                        </h3>
-                    </div>
+                <nav className="flex gap-8 text-[11px] uppercase font-bold tracking-widest">
+                    {["orders", "profile"].map((tab) => (
+                        <button
+                            key={tab}
+                            onClick={() => setActiveTab(tab)}
+                            className={`pb-2 transition-all relative ${activeTab === tab ? "text-slate-900" : "text-slate-400 hover:text-slate-600"
+                                }`}
+                        >
+                            {tab}
+                            {activeTab === tab && (
+                                <motion.div
+                                    layoutId="activeTab"
+                                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600"
+                                />
+                            )}
+                        </button>
+                    ))}
+                </nav>
+            </header>
 
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left">
-                            <thead className="bg-slate-50/50">
-                                <tr>
-                                    {["Order", "Date", "Total", "Status", "Payment"].map((head) => (
-                                        <th key={head} className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">
-                                            {head}
-                                        </th>
-                                    ))}
-                                </tr>
-                            </thead>
+            <AnimatePresence mode="wait">
+                {activeTab === "orders" ? (
+                    /* --- ORDERS VIEW --- */
+                    <motion.div
+                        key="orders"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        className="grid grid-cols-1 lg:grid-cols-3 gap-8"
+                    >
+                        <div className="lg:col-span-2 bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
+                            <div className="p-6 border-b border-slate-50 flex justify-between items-center bg-white">
+                                <h3 className="font-bold text-slate-800 flex items-center gap-2 text-sm">
+                                    <ShoppingBag size={18} className="text-indigo-500" />
+                                    Purchase History
+                                </h3>
+                            </div>
 
-                            <tbody className="divide-y divide-slate-100">
-                                {loading ? (
-                                    <tr><td colSpan="5" className="text-center py-20 text-slate-400 animate-pulse">Loading your orders...</td></tr>
-                                ) : orders.length === 0 ? (
-                                    <tr><td colSpan="5" className="text-center py-20 text-slate-400">No orders found.</td></tr>
-                                ) : (
-                                    orders.map(order => (
-                                        <tr key={order._id} className="hover:bg-slate-50/30 transition-colors group">
-                                            <td className="px-6 py-5 text-center">
-                                                <div className="flex items-center justify-center gap-2">
-                                                    <span className="text-sm font-bold text-slate-700 group-hover:text-indigo-600 transition-colors">
-                                                        #{order.orderNumber}
-                                                    </span>
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-5 text-center text-slate-500 text-sm">
-                                                {new Date(order.orderDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                                            </td>
-                                            <td className="px-6 py-5 text-center">
-                                                <span className="text-sm font-bold text-slate-900">₹{order.totalAmount}</span>
-                                            </td>
-                                            <td className="px-6 py-5 text-center">
-                                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-tight
-                                                    ${order.orderStatus === 'Delivered' ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'}`}>
-                                                    {order.orderStatus}
-                                                </span>
-                                            </td>
-                                            <td className="px-6 py-5 text-center">
-                                                <span className={`text-[11px] font-bold ${order.paymentStatus === "Paid" ? "text-emerald-500" : "text-rose-500"}`}>
-                                                    {order.paymentStatus}
-                                                </span>
-                                            </td>
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr className="bg-slate-50/50">
+                                            {["Reference", "Date", "Amount", "Status", "Payment"].map((h) => (
+                                                <th key={h} className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                                    {h}
+                                                </th>
+                                            ))}
                                         </tr>
-                                    ))
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                {/* Sidebar Stats */}
-                <div className="space-y-6">
-                    <div className="bg-slate-900 rounded-2xl p-6 text-white shadow-xl shadow-indigo-100">
-                        <div className="flex justify-between items-start mb-4">
-                            <div className="p-2 bg-white/10 rounded-lg"><Package size={20} /></div>
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-300">Overview</span>
-                        </div>
-                        <p className="text-slate-400 text-xs">Total Orders</p>
-                        <h4 className="text-3xl font-serif mt-1">{orders.length}</h4>
-                    </div>
-
-                    <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                        <h4 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
-                            <Clock size={16} className="text-indigo-500" /> Account Summary
-                        </h4>
-                        <div className="space-y-4">
-                            <div className="flex justify-between text-sm">
-                                <span className="text-slate-400">Phone</span>
-                                <span className="font-medium text-slate-700">{user?.phone}</span>
-                            </div>
-                            <div className="flex justify-between text-sm">
-                                <span className="text-slate-400">Loyalty Points</span>
-                                <span className="font-medium text-indigo-600">1,250 pts</span>
+                                    </thead>
+                                    <tbody className="divide-y divide-slate-100">
+                                        {loading ? (
+                                            <tr><td colSpan="5" className="py-20 text-center text-slate-400 animate-pulse text-sm">Synchronizing data...</td></tr>
+                                        ) : orders.length === 0 ? (
+                                            <tr><td colSpan="5" className="py-20 text-center text-slate-400 text-sm italic">No transaction records found.</td></tr>
+                                        ) : (
+                                            orders.map((order) => (
+                                                <tr key={order._id} className="hover:bg-slate-50/50 transition-colors group">
+                                                    <td className="px-6 py-5 font-bold text-slate-700 text-sm">#{order.orderNumber}</td>
+                                                    <td className="px-6 py-5 text-slate-500 text-sm">
+                                                        {new Date(order.orderDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: 'numeric' })}
+                                                    </td>
+                                                    <td className="px-6 py-5 font-bold text-slate-900 text-sm">₹{order.totalAmount}</td>
+                                                    <td className="px-6 py-5">
+                                                        <span className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter ${order.orderStatus === "Delivered" ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"
+                                                            }`}>
+                                                            {order.orderStatus}
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-6 py-5 text-[10px] font-bold text-indigo-500 uppercase tracking-widest">{order.paymentStatus}</td>
+                                                </tr>
+                                            ))
+                                        )}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
+
+                        <aside className="space-y-6">
+                            <div className="bg-slate-900 rounded-3xl p-8 text-white shadow-xl relative overflow-hidden">
+                                <div className="relative z-10">
+                                    <Package className="text-indigo-400 mb-4" size={24} />
+                                    <p className="text-slate-400 text-[10px] uppercase font-bold tracking-[0.2em]">Total Spendings</p>
+                                    <h4 className="text-3xl font-serif mt-1">₹{orders.reduce((acc, curr) => acc + curr.totalAmount, 0).toLocaleString()}</h4>
+                                </div>
+                                <div className="absolute -right-4 -bottom-4 text-white/5 rotate-12"><Package size={120} /></div>
+                            </div>
+                            <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
+                                <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6">Quick Summary</h4>
+                                <div className="space-y-4">
+                                    <SummaryItem label="Phone" value={user?.phone} />
+                                    <SummaryItem label="Member Tier" value="Private Gold" color="text-indigo-600" />
+                                    <SummaryItem label="Reward Points" value="1,240 pts" />
+                                </div>
+                            </div>
+                        </aside>
+                    </motion.div>
+                ) : (
+                    /* --- PROFESSIONAL PROFILE VIEW --- */
+                    <motion.div
+                        key="profile"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-10"
+                    >
+                        {/* Sidebar */}
+                        <div className="md:col-span-4 space-y-6">
+                            <div className="bg-white border border-slate-200 rounded-[2rem] p-8 text-center shadow-sm">
+                                <div className="w-24 h-24 bg-gradient-to-tr from-slate-800 to-indigo-600 rounded-full mx-auto flex items-center justify-center text-white text-3xl font-serif mb-4 shadow-lg ring-4 ring-slate-50">
+                                    {user?.name?.charAt(0) || "M"}
+                                </div>
+                                <h3 className="text-xl font-bold text-slate-900">{user?.name}</h3>
+                                <p className="text-slate-400 text-xs mt-1 mb-6 font-medium">{user?.phone}</p>
+                                <div className="pt-6 border-t border-slate-100 grid grid-cols-2 gap-4">
+                                    <div>
+                                        <p className="text-[9px] uppercase tracking-widest text-slate-400 font-bold">Status</p>
+                                        <p className="text-sm font-bold text-emerald-600">Active</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-[9px] uppercase tracking-widest text-slate-400 font-bold">Role</p>
+                                        <p className="text-sm font-bold text-slate-700">{user?.role || "Member"}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="bg-slate-900 rounded-[2rem] p-6 text-white shadow-sm border border-slate-800">
+                                <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-4">Security Settings</h4>
+                                <SecurityLink icon={<ShieldCheck size={14} />} label="Privacy Policy" />
+                                <SecurityLink icon={<CreditCard size={14} />} label="Payment Methods" />
+                                <SecurityLink icon={<LogOut size={14} />} label="Revoke Access" color="text-rose-400" />
+                            </div>
+                        </div>
+
+                        {/* Content Area */}
+                        <div className="md:col-span-8 bg-white border border-slate-200 rounded-[2rem] shadow-sm overflow-hidden">
+                            <div className="px-10 py-8 border-b border-slate-50 flex justify-between items-center bg-white/50 backdrop-blur-md">
+                                <h3 className="font-bold text-slate-800 text-sm">General Information</h3>
+                                <button
+                                    onClick={handleEditProfile}
+                                    disabled={isSaving}
+                                    className="text-[10px] font-black uppercase tracking-widest text-indigo-600 hover:text-indigo-800 transition-all disabled:opacity-50"
+                                >
+                                    {isSaving ? "Updating..." : "Edit Profile"}
+                                </button>
+                            </div>
+
+                            <div className="p-10">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-10">
+                                    <ProfileField label="Full Legal Name" value={user?.name} />
+                                    <ProfileField label="Mobile Number" value={user?.phone} />
+                                    <ProfileField label="Account Type" value={user?.role} />
+                                    <ProfileField label="Member Since" value="January 2024" />
+                                    <ProfileField label="Primary Email" value={`${user?.name?.toLowerCase().replace(' ', '.')}@example.com`} />
+                                    <ProfileField label="Location" value="New Delhi, IN" />
+                                </div>
+
+                                <div className="mt-16 p-6 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <div className="p-3 bg-white rounded-xl shadow-sm"><Clock className="text-indigo-600" size={18} /></div>
+                                        <div>
+                                            <p className="text-[10px] uppercase font-bold text-slate-400 tracking-tighter">Last Synchronization</p>
+                                            <p className="text-sm font-bold text-slate-700 italic">2 minutes ago</p>
+                                        </div>
+                                    </div>
+                                    <ChevronRight size={16} className="text-slate-300" />
+                                </div>
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </motion.div>
+    );
+}
+
+/* --- REFINED SUB-COMPONENTS --- */
+
+function ProfileField({ label, value }) {
+    return (
+        <div className="group">
+            <label className="text-[10px] uppercase text-slate-400 font-black tracking-widest block mb-2 transition-colors group-hover:text-indigo-500">
+                {label}
+            </label>
+            <p className="text-base text-slate-800 font-medium border-b border-transparent transition-all group-hover:border-slate-100 pb-1">
+                {value || "—"}
+            </p>
+        </div>
+    );
+}
+
+function SummaryItem({ label, value, color = "text-slate-700" }) {
+    return (
+        <div className="flex justify-between items-center text-sm">
+            <span className="text-slate-400 font-medium">{label}</span>
+            <span className={`font-bold ${color}`}>{value}</span>
+        </div>
+    );
+}
+
+function SecurityLink({ icon, label, color = "text-slate-300" }) {
+    return (
+        <button className={`w-full flex items-center justify-between py-3 group hover:px-2 transition-all rounded-xl hover:bg-white/5`}>
+            <div className="flex items-center gap-3">
+                <span className={color}>{icon}</span>
+                <span className="text-xs font-medium text-slate-400 group-hover:text-white transition-colors">{label}</span>
+            </div>
+            <ChevronRight size={12} className="text-slate-600" />
+        </button>
     );
 }
 
