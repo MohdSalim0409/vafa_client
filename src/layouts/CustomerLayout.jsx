@@ -9,7 +9,10 @@ import {
     ShieldCheck,
     CreditCard,
     ChevronRight,
-    LogOut
+    LogOut,
+    X,
+    Save,
+    Phone
 } from "lucide-react";
 
 function CustomerLayout() {
@@ -17,7 +20,10 @@ function CustomerLayout() {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState("orders");
+    const [isEditing, setIsEditing] = useState(false);
+    const [editForm, setEditForm] = useState({ name: "", address: "" });
     const [isSaving, setIsSaving] = useState(false);
+    const [updateMessage, setUpdateMessage] = useState({ type: "", text: "" });
 
     useEffect(() => {
         const storedUser = JSON.parse(sessionStorage.getItem("user"));
@@ -41,6 +47,65 @@ function CustomerLayout() {
         // Simulate an API call
         setTimeout(() => setIsSaving(false), 1500);
     };
+    const handleEditToggle = () => {
+        if (!isEditing) {
+            // Reset form to current user data when opening
+            setEditForm({
+                name: user?.name || "",
+                address: user?.address || ""
+            });
+        }
+        setIsEditing(!isEditing);
+        setUpdateMessage({ type: "", text: "" });
+    };
+    const handleSaveProfile = async () => {
+        if (!user?.phone) return;
+
+        setIsSaving(true);
+        setUpdateMessage({ type: "", text: "" });
+
+        try {
+            const response = await axios.put(`http://localhost:5000/api/users/phone/${user.phone}`, {
+                name: editForm.name,
+                address: editForm.address
+            });
+
+            if (response.data.success) {
+                const updatedUser = response.data.user;
+                setUser(updatedUser);
+
+                // Update session storage
+                sessionStorage.setItem("user", JSON.stringify(updatedUser));
+
+                setUpdateMessage({
+                    type: "success",
+                    text: "Profile updated successfully!"
+                });
+
+                // Exit edit mode after successful update
+                setTimeout(() => {
+                    setIsEditing(false);
+                    setUpdateMessage({ type: "", text: "" });
+                }, 2000);
+            }
+        } catch (err) {
+            console.error("Error updating profile:", err);
+            setUpdateMessage({
+                type: "error",
+                text: err.response?.data?.message || "Failed to update profile"
+            });
+        } finally {
+            setIsSaving(false);
+        }
+    };
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setEditForm(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
 
     return (
         <motion.div
@@ -195,36 +260,100 @@ function CustomerLayout() {
                         {/* Content Area */}
                         <div className="md:col-span-8 bg-white border border-slate-200 rounded-[2rem] shadow-sm overflow-hidden">
                             <div className="px-10 py-8 border-b border-slate-50 flex justify-between items-center bg-white/50 backdrop-blur-md">
-                                <h3 className="font-bold text-slate-800 text-sm">General Information</h3>
-                                <button
-                                    onClick={handleEditProfile}
-                                    disabled={isSaving}
-                                    className="text-[10px] font-black uppercase tracking-widest text-indigo-600 hover:text-indigo-800 transition-all disabled:opacity-50"
-                                >
-                                    {isSaving ? "Updating..." : "Edit Profile"}
-                                </button>
+                                <h3 className="font-bold text-slate-800 text-sm">
+                                    {isEditing ? "Edit Profile Information" : "General Information"}
+                                </h3>
+                                <div className="flex gap-3">
+                                    {isEditing ? (
+                                        <>
+                                            <button
+                                                onClick={handleEditToggle}
+                                                className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-all flex items-center gap-1"
+                                            >
+                                                <X size={14} /> Cancel
+                                            </button>
+                                            <button
+                                                onClick={handleSaveProfile}
+                                                disabled={isSaving}
+                                                className="text-[10px] font-black uppercase tracking-widest text-indigo-600 hover:text-indigo-800 transition-all disabled:opacity-50 flex items-center gap-1"
+                                            >
+                                                <Save size={14} /> {isSaving ? "Saving..." : "Save Changes"}
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <button
+                                            onClick={handleEditToggle}
+                                            className="text-[10px] font-black uppercase tracking-widest text-indigo-600 hover:text-indigo-800 transition-all"
+                                        >
+                                            Edit Profile
+                                        </button>
+                                    )}
+                                </div>
                             </div>
 
                             <div className="p-10">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-10">
-                                    <ProfileField label="Full Legal Name" value={user?.name} />
-                                    <ProfileField label="Mobile Number" value={user?.phone} />
-                                    <ProfileField label="Account Type" value={user?.role} />
-                                    <ProfileField label="Member Since" value="January 2024" />
-                                    <ProfileField label="Primary Email" value={`${user?.name?.toLowerCase().replace(' ', '.')}@example.com`} />
-                                    <ProfileField label="Location" value="New Delhi, IN" />
-                                </div>
-
-                                <div className="mt-16 p-6 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between">
-                                    <div className="flex items-center gap-4">
-                                        <div className="p-3 bg-white rounded-xl shadow-sm"><Clock className="text-indigo-600" size={18} /></div>
+                                {isEditing ? (
+                                    /* Edit Mode Form */
+                                    <div className="space-y-6">
                                         <div>
-                                            <p className="text-[10px] uppercase font-bold text-slate-400 tracking-tighter">Last Synchronization</p>
-                                            <p className="text-sm font-bold text-slate-700 italic">2 minutes ago</p>
+                                            <label className="text-[10px] uppercase text-slate-400 font-black tracking-widest block mb-2">
+                                                Full Name
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="name"
+                                                value={editForm.name}
+                                                onChange={handleInputChange}
+                                                className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                                                placeholder="Enter your full name"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="text-[10px] uppercase text-slate-400 font-black tracking-widest block mb-2">
+                                                Address
+                                            </label>
+                                            <textarea
+                                                name="address"
+                                                value={editForm.address}
+                                                onChange={handleInputChange}
+                                                rows="3"
+                                                className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                                                placeholder="Enter your address"
+                                            />
+                                        </div>
+
+                                        <div className="bg-indigo-50/50 p-4 rounded-xl">
+                                            <p className="text-xs text-indigo-600 flex items-center gap-2">
+                                                <Phone size={14} />
+                                                Phone number cannot be changed for security reasons
+                                            </p>
                                         </div>
                                     </div>
-                                    <ChevronRight size={16} className="text-slate-300" />
-                                </div>
+                                ) : (
+                                    /* View Mode */
+                                    <>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-10">
+                                            <ProfileField label="Full Legal Name" value={user?.name} />
+                                            <ProfileField label="Mobile Number" value={user?.phone} />
+                                            <ProfileField label="Account Type" value={user?.role} />
+                                            <ProfileField label="Member Since" value={new Date(user?.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) || "January 2024"} />
+                                            <ProfileField label="Address" value={user?.address || "Not provided"} />
+                                            <ProfileField label="Location" value="New Delhi, IN" />
+                                        </div>
+
+                                        <div className="mt-16 p-6 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between">
+                                            <div className="flex items-center gap-4">
+                                                <div className="p-3 bg-white rounded-xl shadow-sm"><Clock className="text-indigo-600" size={18} /></div>
+                                                <div>
+                                                    <p className="text-[10px] uppercase font-bold text-slate-400 tracking-tighter">Last Synchronization</p>
+                                                    <p className="text-sm font-bold text-slate-700 italic">Just now</p>
+                                                </div>
+                                            </div>
+                                            <ChevronRight size={16} className="text-slate-300" />
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </motion.div>
