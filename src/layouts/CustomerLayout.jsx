@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 
 function CustomerLayout() {
+
     const [orders, setOrders] = useState([]);
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -129,10 +130,9 @@ function CustomerLayout() {
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`pb-2 transition-all relative ${activeTab === tab ? "text-slate-900" : "text-slate-400 hover:text-slate-600"
-                                }`}
+                            className={`pb-2 transition-all relative ${activeTab === tab ? "text-slate-900" : "text-slate-400 hover:text-slate-600"}`}
                         >
-                            {tab}
+                            {tab === "orders" ? "Orders" : "Profile"}
                             {activeTab === tab && (
                                 <motion.div
                                     layoutId="activeTab"
@@ -146,7 +146,6 @@ function CustomerLayout() {
 
             <AnimatePresence mode="wait">
                 {activeTab === "orders" ? (
-                    /* --- ORDERS VIEW --- */
                     <motion.div
                         key="orders"
                         initial={{ opacity: 0, y: 20 }}
@@ -227,11 +226,11 @@ function CustomerLayout() {
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -20 }}
-                        className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-10"
+                        className="mx-auto grid grid-cols-1 md:grid-cols-12 gap-10"
                     >
                         {/* Sidebar */}
-                        <div className="md:col-span-4 space-y-6">
-                            <div className="bg-white border border-slate-200 rounded-[2rem] p-8 text-center shadow-sm">
+                        <div className="md:col-span-4 space-y-10">
+                            <div className="bg-white border border-slate-200 rounded-[1rem] p-8 text-center shadow-sm">
                                 <div className="w-24 h-24 bg-gradient-to-tr from-slate-800 to-indigo-600 rounded-full mx-auto flex items-center justify-center text-white text-3xl font-serif mb-4 shadow-lg ring-4 ring-slate-50">
                                     {user?.name?.charAt(0) || "M"}
                                 </div>
@@ -249,10 +248,8 @@ function CustomerLayout() {
                                 </div>
                             </div>
 
-                            <div className="bg-slate-900 rounded-[2rem] p-6 text-white shadow-sm border border-slate-800">
+                            <div className="bg-slate-900 rounded-[1rem] p-6 text-white shadow-sm border border-slate-800">
                                 <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-4">Security Settings</h4>
-                                <SecurityLink icon={<ShieldCheck size={14} />} label="Privacy Policy" />
-                                <SecurityLink icon={<CreditCard size={14} />} label="Payment Methods" />
                                 <SecurityLink icon={<LogOut size={14} />} label="Revoke Access" color="text-rose-400" />
                             </div>
                         </div>
@@ -322,13 +319,6 @@ function CustomerLayout() {
                                                 placeholder="Enter your address"
                                             />
                                         </div>
-
-                                        <div className="bg-indigo-50/50 p-4 rounded-xl">
-                                            <p className="text-xs text-indigo-600 flex items-center gap-2">
-                                                <Phone size={14} />
-                                                Phone number cannot be changed for security reasons
-                                            </p>
-                                        </div>
                                     </div>
                                 ) : (
                                     /* View Mode */
@@ -340,17 +330,6 @@ function CustomerLayout() {
                                             <ProfileField label="Member Since" value={new Date(user?.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) || "January 2024"} />
                                             <ProfileField label="Address" value={user?.address || "Not provided"} />
                                             <ProfileField label="Location" value="New Delhi, IN" />
-                                        </div>
-
-                                        <div className="mt-16 p-6 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between">
-                                            <div className="flex items-center gap-4">
-                                                <div className="p-3 bg-white rounded-xl shadow-sm"><Clock className="text-indigo-600" size={18} /></div>
-                                                <div>
-                                                    <p className="text-[10px] uppercase font-bold text-slate-400 tracking-tighter">Last Synchronization</p>
-                                                    <p className="text-sm font-bold text-slate-700 italic">Just now</p>
-                                                </div>
-                                            </div>
-                                            <ChevronRight size={16} className="text-slate-300" />
                                         </div>
                                     </>
                                 )}

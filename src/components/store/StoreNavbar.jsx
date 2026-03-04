@@ -14,7 +14,7 @@ function StoreNavbar() {
     const [cartCount, setCartCount] = useState(0);
     const [showCart, setShowCart] = useState(false);
     const [cartItems, setCartItems] = useState([]);
-    const [checkoutStage, setCheckoutStage] = useState("cart"); 
+    const [checkoutStage, setCheckoutStage] = useState("cart");
     const [addressData, setAddressData] = useState({
         name: "", phone: "", address: "", city: "", pincode: "", paymentMethod: "COD"
     });
@@ -37,7 +37,7 @@ function StoreNavbar() {
             const user = sessionStorage.getItem("user");
             if (user) {
                 const parsedUser = JSON.parse(user);
-                fetchCart(parsedUser.phone); 
+                fetchCart(parsedUser.phone);
                 setShowCart(true);
                 setCheckoutStage("cart");
             }
@@ -52,11 +52,27 @@ function StoreNavbar() {
         };
     }, []);
 
+    const handleSignup = async () => {
+        try {
+            const res = await axios.post("http://localhost:5000/api/auth/register", signupData);
+            if (res.data.success) {
+                alert("Registration successful! Please login.");
+                setShowLoginModal(false);
+                setAuthView("login");
+            } else {
+                alert(res.data.message || "Registration failed");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Registration error");
+        }
+    };
+
     // ADD SCROLL FUNCTION
     const scrollToSection = (sectionId) => {
         const element = document.getElementById(sectionId);
         if (element) {
-            const navbarHeight = 100; // Adjust based on your navbar height
+            const navbarHeight = 100;
             const elementPosition = element.getBoundingClientRect().top;
             const offsetPosition = elementPosition + window.pageYOffset - navbarHeight;
 
@@ -189,23 +205,110 @@ function StoreNavbar() {
                 {showLoginModal && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowLoginModal(false)} className="absolute inset-0 bg-neutral-950/70 backdrop-blur-sm" />
-                        <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="relative w-full max-w-[850px] h-[550px] bg-white rounded-2xl shadow-2xl overflow-hidden flex">
+                        {/* Inside the AnimatePresence for auth modal */}
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            className="relative w-full max-w-[850px] h-[550px] bg-white rounded-2xl shadow-2xl overflow-hidden flex"
+                        >
+                            {/* Left panel – unchanged */}
                             <div className="hidden md:flex w-5/12 bg-neutral-900 relative p-12 flex-col justify-between text-white">
                                 <div className="absolute inset-0 opacity-40 bg-cover bg-center" style={{ backgroundImage: `url(${VafaPerfume})` }} />
                                 <h3 className="relative z-10 text-2xl font-serif tracking-[0.2em] uppercase">Pure Essence</h3>
                                 <p className="relative z-10 text-[9px] tracking-[0.3em] uppercase opacity-50">Private Collection 2026</p>
                             </div>
+
+                            {/* Right panel – conditional form */}
                             <div className="w-full md:w-7/12 p-12 flex flex-col justify-center relative bg-white">
-                                <button onClick={() => setShowLoginModal(false)} className="absolute top-8 right-8 text-neutral-300 hover:text-black"><X size={20} /></button>
-                                <h2 className="text-2xl font-serif tracking-widest uppercase mb-10">{authView === "login" ? "Sign In" : "Register"}</h2>
-                                <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
-                                    <InputField label="Phone Number" placeholder="+91" onChange={(e) => setLoginData({ ...loginData, phone: e.target.value })} />
-                                    <InputField label="Password" type="password" placeholder="••••••••" onChange={(e) => setLoginData({ ...loginData, password: e.target.value })} />
-                                    <button onClick={handleLogin} className="w-full bg-neutral-900 text-white py-4 mt-4 flex items-center justify-center gap-3">
-                                        <span className="text-[10px] uppercase tracking-[0.3em] font-bold">Authenticate</span>
-                                        <ArrowRight size={14} />
-                                    </button>
-                                </form>
+                                <button onClick={() => setShowLoginModal(false)} className="absolute top-8 right-8 text-neutral-300 hover:text-black">
+                                    <X size={20} />
+                                </button>
+
+                                <h2 className="text-2xl font-serif tracking-widest uppercase mb-10">
+                                    {authView === "login" ? "Sign In" : "Create Account"}
+                                </h2>
+
+                                {authView === "login" ? (
+                                    // LOGIN FORM
+                                    <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+                                        <InputField
+                                            label="Phone Number"
+                                            placeholder="+91 98765 43210"
+                                            value={loginData.phone}
+                                            onChange={(e) => setLoginData({ ...loginData, phone: e.target.value })}
+                                        />
+                                        <InputField
+                                            label="Password"
+                                            type="password"
+                                            placeholder="••••••••"
+                                            value={loginData.password}
+                                            onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
+                                        />
+                                        <button
+                                            onClick={handleLogin}
+                                            className="w-full bg-neutral-900 text-white py-4 mt-4 flex items-center justify-center gap-3"
+                                        >
+                                            <span className="text-[10px] uppercase tracking-[0.3em] font-bold">Authenticate</span>
+                                            <ArrowRight size={14} />
+                                        </button>
+                                        <p className="text-center text-[9px] text-neutral-400 mt-4">
+                                            New here?{" "}
+                                            <button
+                                                type="button"
+                                                onClick={() => setAuthView("signup")}
+                                                className="underline underline-offset-2 hover:text-black"
+                                            >
+                                                Register
+                                            </button>
+                                        </p>
+                                    </form>
+                                ) : (
+                                    // SIGNUP FORM
+                                    <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+                                        <InputField
+                                            label="Full Name"
+                                            placeholder="John Doe"
+                                            value={signupData.name}
+                                            onChange={(e) => setSignupData({ ...signupData, name: e.target.value })}
+                                        />
+                                        <InputField
+                                            label="Phone Number"
+                                            placeholder="+91 98765 43210"
+                                            value={signupData.phone}
+                                            onChange={(e) => setSignupData({ ...signupData, phone: e.target.value })}
+                                        />
+                                        <InputField
+                                            label="Address"
+                                            placeholder="Street, City"
+                                            value={signupData.address}
+                                            onChange={(e) => setSignupData({ ...signupData, address: e.target.value })}
+                                        />
+                                        <InputField
+                                            label="Password"
+                                            type="password"
+                                            placeholder="Create a password"
+                                            value={signupData.password}
+                                            onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
+                                        />
+                                        <button
+                                            onClick={handleSignup}
+                                            className="w-full bg-neutral-900 text-white py-4 mt-4 flex items-center justify-center gap-3"
+                                        >
+                                            <span className="text-[10px] uppercase tracking-[0.3em] font-bold">Register</span>
+                                            <ArrowRight size={14} />
+                                        </button>
+                                        <p className="text-center text-[9px] text-neutral-400 mt-4">
+                                            Already have an account?{" "}
+                                            <button
+                                                type="button"
+                                                onClick={() => setAuthView("login")}
+                                                className="underline underline-offset-2 hover:text-black"
+                                            >
+                                                Sign in
+                                            </button>
+                                        </p>
+                                    </form>
+                                )}
                             </div>
                         </motion.div>
                     </div>
