@@ -114,8 +114,8 @@ function PerfumeList() {
                                     {/* Price and Sizes */}
                                     <div className="mt-auto">
                                         <div className="flex items-baseline gap-2 mb-5">
-                                            <span className="text-2xl font-bold text-gray-900">${selected?.price}</span>
-                                            <span className="text-sm text-gray-400 line-through">${(selected?.price * 1.2).toFixed(2)}</span>
+                                            <span className="text-2xl font-bold text-gray-900">₹{selected?.price}</span>
+                                            <span className="text-sm text-gray-400 line-through">₹{Math.round(selected?.price * 1.2)}</span>
                                         </div>
 
                                         <div className="flex flex-wrap gap-2 mb-5">

@@ -267,7 +267,7 @@ function StoreNavbar() {
                                     <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
                                         <InputField
                                             label="Full Name"
-                                            placeholder="John Doe"
+                                            placeholder=""
                                             value={signupData.name}
                                             onChange={(e) => setSignupData({ ...signupData, name: e.target.value })}
                                         />
