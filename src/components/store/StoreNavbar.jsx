@@ -273,20 +273,20 @@ function StoreNavbar() {
                                         />
                                         <InputField
                                             label="Phone Number"
-                                            placeholder="+91 98765 43210"
+                                            placeholder=""
                                             value={signupData.phone}
                                             onChange={(e) => setSignupData({ ...signupData, phone: e.target.value })}
                                         />
                                         <InputField
                                             label="Address"
-                                            placeholder="Street, City"
+                                            placeholder=""
                                             value={signupData.address}
                                             onChange={(e) => setSignupData({ ...signupData, address: e.target.value })}
                                         />
                                         <InputField
                                             label="Password"
                                             type="password"
-                                            placeholder="Create a password"
+                                            placeholder=""
                                             value={signupData.password}
                                             onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
                                         />
