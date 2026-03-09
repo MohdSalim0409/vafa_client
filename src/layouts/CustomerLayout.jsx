@@ -1,7 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from 'react-router-dom';
 import {
     Package,
     ShoppingBag,
@@ -26,7 +25,6 @@ function CustomerLayout() {
     const [editForm, setEditForm] = useState({ name: "", address: "" });
     const [isSaving, setIsSaving] = useState(false);
     const [updateMessage, setUpdateMessage] = useState({ type: "", text: "" });
-    const navigate = useNavigate()
 
     useEffect(() => {
         const storedUser = JSON.parse(sessionStorage.getItem("user"));
@@ -250,14 +248,10 @@ function CustomerLayout() {
                                 </div>
                             </div>
 
-                            <button onClick={() => { sessionStorage.removeItem('user'); navigate('/') }} className="bg-slate-900 rounded-[1rem] w-full p-6 text-white shadow-sm border border-slate-800">
+                            <div className="bg-slate-900 rounded-[1rem] p-6 text-white shadow-sm border border-slate-800">
                                 <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-4">Security Settings</h4>
                                 <SecurityLink icon={<LogOut size={14} />} label="Revoke Access" color="text-rose-400" />
-<<<<<<< HEAD
                             </div>  
-=======
-                            </button>
->>>>>>> a4c3d2049ddf24a6f12a86cbc0533bea1293a1ee
                         </div>
 
                         {/* Content Area */}
