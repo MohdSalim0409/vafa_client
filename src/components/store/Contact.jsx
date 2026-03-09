@@ -21,7 +21,7 @@ const Contact = () => {
                         <span className="font-sans text-[8px] tracking-[0.4em] uppercase text-stone-400">Parfumerie</span>
                     </div>
                     <div className="h-px flex-grow mx-12 bg-stone-100 hidden md:block" />
-                    <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-stone-400">Est. 2026 — Paris</p>
+                    <p className="font-sans text-[9px] tracking-[0.3em] uppercase text-stone-400">Est. 2026 — vafa</p>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-y-24">

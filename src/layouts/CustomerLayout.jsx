@@ -251,7 +251,7 @@ function CustomerLayout() {
                             <div className="bg-slate-900 rounded-[1rem] p-6 text-white shadow-sm border border-slate-800">
                                 <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-4">Security Settings</h4>
                                 <SecurityLink icon={<LogOut size={14} />} label="Revoke Access" color="text-rose-400" />
-                            </div>
+                            </div>  
                         </div>
 
                         {/* Content Area */}
