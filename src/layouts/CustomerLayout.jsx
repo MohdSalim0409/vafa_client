@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
     Package,
@@ -25,6 +26,7 @@ function CustomerLayout() {
     const [editForm, setEditForm] = useState({ name: "", address: "" });
     const [isSaving, setIsSaving] = useState(false);
     const [updateMessage, setUpdateMessage] = useState({ type: "", text: "" });
+    const navigate = useNavigate();
 
     useEffect(() => {
         const storedUser = JSON.parse(sessionStorage.getItem("user"));
@@ -43,14 +45,8 @@ function CustomerLayout() {
         }
     }, []);
 
-    const handleEditProfile = () => {
-        setIsSaving(true);
-        // Simulate an API call
-        setTimeout(() => setIsSaving(false), 1500);
-    };
     const handleEditToggle = () => {
         if (!isEditing) {
-            // Reset form to current user data when opening
             setEditForm({
                 name: user?.name || "",
                 address: user?.address || ""
@@ -60,6 +56,7 @@ function CustomerLayout() {
         setUpdateMessage({ type: "", text: "" });
     };
     const handleSaveProfile = async () => {
+
         if (!user?.phone) return;
 
         setIsSaving(true);
@@ -248,10 +245,13 @@ function CustomerLayout() {
                                 </div>
                             </div>
 
-                            <div className="bg-slate-900 rounded-[1rem] p-6 text-white shadow-sm border border-slate-800">
+                            <button
+                                onClick={() => { sessionStorage.removeItem('user'); navigate('/') }}
+                                className="bg-slate-900 w-full rounded-[1rem] p-6 text-white shadow-sm border border-slate-800"
+                            >
                                 <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-4">Security Settings</h4>
                                 <SecurityLink icon={<LogOut size={14} />} label="Revoke Access" color="text-rose-400" />
-                            </div>  
+                            </button>
                         </div>
 
                         {/* Content Area */}

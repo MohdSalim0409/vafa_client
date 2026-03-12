@@ -18,6 +18,13 @@ function StoreNavbar() {
     const [addressData, setAddressData] = useState({
         name: "", phone: "", address: "", city: "", pincode: "", paymentMethod: "COD"
     });
+    // NEW STATE FOR CARD / UPI FIELDS (UI only)
+    const [cardDetails, setCardDetails] = useState({
+        cardNumber: "",
+        cardExpiry: "",
+        cardCvv: "",
+        upiId: ""
+    });
 
     useEffect(() => {
         const storedUser = sessionStorage.getItem("user");
@@ -32,7 +39,6 @@ function StoreNavbar() {
             if (count) setCartCount(Number(count));
         };
 
-        // ADD THIS LISTENER
         const handleOpenDrawer = () => {
             const user = sessionStorage.getItem("user");
             if (user) {
@@ -68,7 +74,6 @@ function StoreNavbar() {
         }
     };
 
-    // ADD SCROLL FUNCTION
     const scrollToSection = (sectionId) => {
         const element = document.getElementById(sectionId);
         if (element) {
@@ -91,7 +96,6 @@ function StoreNavbar() {
         } catch (err) { console.error("Cart fetch error", err); }
     };
 
-    // --- Action Handlers ---
     const handleLogin = async () => {
         try {
             const res = await axios.post("http://localhost:5000/api/auth/login", loginData);
@@ -205,20 +209,17 @@ function StoreNavbar() {
                 {showLoginModal && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowLoginModal(false)} className="absolute inset-0 bg-neutral-950/70 backdrop-blur-sm" />
-                        {/* Inside the AnimatePresence for auth modal */}
                         <motion.div
                             initial={{ scale: 0.95, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             className="relative w-full max-w-[850px] h-[550px] bg-white rounded-2xl shadow-2xl overflow-hidden flex"
                         >
-                            {/* Left panel – unchanged */}
                             <div className="hidden md:flex w-5/12 bg-neutral-900 relative p-12 flex-col justify-between text-white">
                                 <div className="absolute inset-0 opacity-40 bg-cover bg-center" style={{ backgroundImage: `url(${VafaPerfume})` }} />
                                 <h3 className="relative z-10 text-2xl font-serif tracking-[0.2em] uppercase">Pure Essence</h3>
                                 <p className="relative z-10 text-[9px] tracking-[0.3em] uppercase opacity-50">Private Collection 2026</p>
                             </div>
 
-                            {/* Right panel – conditional form */}
                             <div className="w-full md:w-7/12 p-12 flex flex-col justify-center relative bg-white">
                                 <button onClick={() => setShowLoginModal(false)} className="absolute top-8 right-8 text-neutral-300 hover:text-black">
                                     <X size={20} />
@@ -229,7 +230,6 @@ function StoreNavbar() {
                                 </h2>
 
                                 {authView === "login" ? (
-                                    // LOGIN FORM
                                     <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
                                         <InputField
                                             label="Phone Number"
@@ -263,7 +263,6 @@ function StoreNavbar() {
                                         </p>
                                     </form>
                                 ) : (
-                                    // SIGNUP FORM
                                     <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
                                         <InputField
                                             label="Full Name"
@@ -340,7 +339,7 @@ function StoreNavbar() {
                             {/* Main Content Area */}
                             <div className="flex-1 overflow-y-auto px-10 py-8 scrollbar-hide">
                                 <AnimatePresence mode="wait">
-                                    {/* STAGE 1: CART (With Remove Button) */}
+                                    {/* STAGE 1: CART */}
                                     {checkoutStage === "cart" && (
                                         <motion.div key="cart" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-10">
                                             {cartItems.length > 0 ? cartItems.map((item, idx) => (
@@ -357,7 +356,6 @@ function StoreNavbar() {
                                                             <span className="text-xs font-light">${(item.priceAtTime * item.quantity).toFixed(2)}</span>
                                                         </div>
 
-                                                        {/* Quantity & Remove Control */}
                                                         <div className="mt-auto flex items-center justify-between">
                                                             <div className="flex items-center gap-4 border border-neutral-100 px-3 py-1">
                                                                 <button onClick={() => handleQuantityChange(item.inventory._id || item.inventory, "decrease")} className="text-xs hover:text-black transition-colors">–</button>
@@ -407,6 +405,38 @@ function StoreNavbar() {
                                                 active={addressData.paymentMethod === "RAZORPAY"}
                                                 onClick={() => setAddressData({ ...addressData, paymentMethod: "RAZORPAY" })}
                                             />
+                                            {/* NEW UI FIELDS FOR CARD / UPI */}
+                                            {addressData.paymentMethod === "RAZORPAY" && (
+                                                <div className="space-y-4 mt-4">
+                                                    <InputField
+                                                        label="Card Number"
+                                                        placeholder="1234 5678 9012 3456"
+                                                        value={cardDetails.cardNumber}
+                                                        onChange={(e) => setCardDetails({ ...cardDetails, cardNumber: e.target.value })}
+                                                    />
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        <InputField
+                                                            label="Expiry Date"
+                                                            placeholder="MM/YY"
+                                                            value={cardDetails.cardExpiry}
+                                                            onChange={(e) => setCardDetails({ ...cardDetails, cardExpiry: e.target.value })}
+                                                        />
+                                                        <InputField
+                                                            label="CVV"
+                                                            placeholder="123"
+                                                            type="password"
+                                                            value={cardDetails.cardCvv}
+                                                            onChange={(e) => setCardDetails({ ...cardDetails, cardCvv: e.target.value })}
+                                                        />
+                                                    </div>
+                                                    <InputField
+                                                        label="UPI ID"
+                                                        placeholder="username@okhdfcbank"
+                                                        value={cardDetails.upiId}
+                                                        onChange={(e) => setCardDetails({ ...cardDetails, upiId: e.target.value })}
+                                                    />
+                                                </div>
+                                            )}
                                         </motion.div>
                                     )}
                                 </AnimatePresence>
@@ -447,7 +477,6 @@ function StoreNavbar() {
     );
 }
 
-// --- High-End Sub-Components ---
 const InputField = ({ label, ...props }) => (
     <div className="flex flex-col gap-2 group">
         <label className="text-[9px] uppercase tracking-widest font-bold text-neutral-400 group-focus-within:text-black transition-colors">{label}</label>
